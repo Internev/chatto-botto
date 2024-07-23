@@ -29,9 +29,9 @@ const Button = styled.button`
   }
 `
 
-const MicIcon = () => (
+const MicIcon: React.FC<{ isRecording: boolean }> = ({ isRecording }) => (
   <svg
-    fill="#000000"
+    fill={isRecording ? '#FF0000' : '#000000'}
     width="50px"
     height="50px"
     viewBox="0 0 32 32"
@@ -45,12 +45,16 @@ const MicIcon = () => (
 
 interface MicrophoneButtonProps {
   onClick: () => void
+  isRecording: boolean
 }
 
-const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({ onClick }) => {
+const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
+  onClick,
+  isRecording,
+}) => {
   return (
     <Button onClick={onClick}>
-      <MicIcon />
+      <MicIcon isRecording={isRecording} />
     </Button>
   )
 }
