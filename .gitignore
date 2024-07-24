@@ -1,3 +1,6 @@
+#env etc
+application_default_credentials.json
+
 # Logs
 logs
 *.log
