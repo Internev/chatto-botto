@@ -12,6 +12,7 @@ export const electronAPI = {
       throw error
     }
   },
+  getEnv: (envName: string) => ipcRenderer.invoke('get-env', envName),
 }
 
 process.once('loaded', () => {

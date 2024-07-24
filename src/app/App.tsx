@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import BottomBar from './components/BottomBar'
+import MessageWindow from './components/MessageWindow'
 
 const AppContainer = styled.div`
   width: 800px;
@@ -13,6 +14,7 @@ const AppContainer = styled.div`
 const App = () => {
   return (
     <AppContainer>
+      <MessageWindow />
       <BottomBar />
     </AppContainer>
   )

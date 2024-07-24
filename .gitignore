@@ -1,6 +1,3 @@
-#env etc
-application_default_credentials.json
-
 # Logs
 logs
 *.log
@@ -63,6 +60,7 @@ typings/
 # dotenv environment variables file
 .env
 .env.test
+application_default_credentials.json
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
