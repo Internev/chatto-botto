@@ -1,5 +1,19 @@
 import { useState, useRef, useCallback } from 'react'
 
+const blobToBase64 = (blob: Blob): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(blob)
+    reader.onload = () => {
+      const base64String = (reader.result as string).split(',')[1]
+      resolve(base64String)
+    }
+    reader.onerror = () => {
+      reject('Error converting blob to base64')
+    }
+  })
+}
+
 const useAudioRecorder = () => {
   const [isRecording, setIsRecording] = useState(false)
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
@@ -9,7 +23,10 @@ const useAudioRecorder = () => {
 
   const transcribeAudio = async (blob: Blob) => {
     try {
-      const transcriptionResult = await window.electronAPI.transcribe(blob)
+      const base64String = await blobToBase64(blob)
+      const transcriptionResult = await window.electronAPI.transcribe(
+        base64String
+      )
       setTranscription(transcriptionResult)
       console.log('Transcription:', transcriptionResult)
     } catch (error) {
@@ -24,6 +41,10 @@ const useAudioRecorder = () => {
     setTranscription(null)
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      // const audioTracks = stream.getAudioTracks()
+      // const sampleRate = audioTracks[0].getSettings().sampleRate
+      // console.log('audioTracks:', audioTracks)
+      // console.log('sampleRate:', sampleRate)
       mediaRecorderRef.current = new MediaRecorder(stream)
       chunksRef.current = []
 

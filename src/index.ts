@@ -37,9 +37,8 @@ const createWindow = (): void => {
 // Some APIs can only be used after this event occurs.
 
 app.on('ready', () => {
-  ipcMain.handle('ping', (event, message: string) => {
-    console.log('💌', event)
-    return dataReceiver(message)
+  ipcMain.handle('transcribe', (_, audioString: string) => {
+    return dataReceiver(audioString)
   })
   createWindow()
 })

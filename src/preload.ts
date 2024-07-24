@@ -3,10 +3,9 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
 export const electronAPI = {
-  ping: (message: string) => ipcRenderer.invoke('ping', message),
-  transcribe: async (audio: Blob) => {
+  transcribe: async (audioString: string) => {
     try {
-      const result = await ipcRenderer.invoke('transcribe', audio)
+      const result = await ipcRenderer.invoke('transcribe', audioString)
       return result
     } catch (error) {
       console.error('Error transcribing:', error)
