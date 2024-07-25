@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import BottomBar from './components/BottomBar'
 import MessageWindow from './components/MessageWindow'
+import { AppProvider } from './context/AppContext'
 
 const AppContainer = styled.div`
   width: 800px;
@@ -13,10 +14,12 @@ const AppContainer = styled.div`
 
 const App = () => {
   return (
-    <AppContainer>
-      <MessageWindow />
-      <BottomBar />
-    </AppContainer>
+    <AppProvider>
+      <AppContainer>
+        <MessageWindow />
+        <BottomBar />
+      </AppContainer>
+    </AppProvider>
   )
 }
 
