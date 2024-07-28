@@ -1,7 +1,13 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react'
-import { AppState, Action, Conversation, Message, LanguageCode } from './types'
+import {
+  IAppState,
+  IAction,
+  IConversation,
+  IMessage,
+  ILanguageCode,
+} from './types'
 
-const exampleConversations: Conversation[] = [
+const exampleConversations: IConversation[] = [
   {
     id: '1',
     participants: ['user-1', 'user-2'],
@@ -11,9 +17,45 @@ const exampleConversations: Conversation[] = [
         userId: 'user-1',
         timestamp: Date.now(),
         translations: {
-          en: `Simple Japanese, that's what we need.`,
-          ja: 'シンプルな日本語、それが私たちに必要なものです。',
-          ro: 'Shinpuruna nihongo, sore ga watashitachi ni hitsuyōna monodesu.',
+          en: `Hello. How was your weekend?`,
+          ja: 'こんにちは。休みは どうでしたか？',
+          ro: 'Konnichiwa. Yasumi wa dou deshita ka?',
+        },
+        originalLanguage: 'ja',
+        agent: 'bot',
+      },
+      {
+        id: '2',
+        userId: 'user-2',
+        timestamp: Date.now(),
+        translations: {
+          en: `On the weekend, I ate dinner with a friend.`,
+          ja: 'しゅうまつは ともだちと ばんごはんを たべました',
+          ro: 'Shuumatsu wa tomodachi to bangohan wo tabemashita.',
+        },
+        originalLanguage: 'ja',
+        agent: 'user',
+      },
+      {
+        id: '1',
+        userId: 'user-1',
+        timestamp: Date.now(),
+        translations: {
+          en: `That sounds fun. What did you eat?`,
+          ja: 'たのしかったですね。なにを たべましたか？',
+          ro: 'Tanoshikatta desu ne. Nani wo tabemashita ka?',
+        },
+        originalLanguage: 'ja',
+        agent: 'bot',
+      },
+      {
+        id: '1',
+        userId: 'user-1',
+        timestamp: Date.now(),
+        translations: {
+          en: `Um, egg on rice. It was delicious!`,
+          ja: 'ええと、たまごごはんです。おいしかったです！',
+          ro: 'Eeto, tamagogohan desu. Oishikatta desu!',
         },
         originalLanguage: 'ja',
         agent: 'user',
@@ -23,49 +65,11 @@ const exampleConversations: Conversation[] = [
         userId: 'user-2',
         timestamp: Date.now(),
         translations: {
-          en: 'I am well, thank you!',
+          en: `Sounds delicious! Where did you eat?`,
+          ja: 'おいしそう！ どこで たべましたか？',
+          ro: 'Oishisou! Doko de tabemashita ka?',
         },
-        originalLanguage: 'en',
-        agent: 'bot',
-      },
-      {
-        id: '1',
-        userId: 'user-1',
-        timestamp: Date.now(),
-        translations: {
-          en: 'Hello, how are you?',
-        },
-        originalLanguage: 'en',
-        agent: 'user',
-      },
-      {
-        id: '2',
-        userId: 'user-2',
-        timestamp: Date.now(),
-        translations: {
-          en: 'I am well, thank you!',
-        },
-        originalLanguage: 'en',
-        agent: 'bot',
-      },
-      {
-        id: '1',
-        userId: 'user-1',
-        timestamp: Date.now(),
-        translations: {
-          en: 'Hello, how are you?',
-        },
-        originalLanguage: 'en',
-        agent: 'user',
-      },
-      {
-        id: '2',
-        userId: 'user-2',
-        timestamp: Date.now(),
-        translations: {
-          en: 'I am well, thank you!',
-        },
-        originalLanguage: 'en',
+        originalLanguage: 'ja',
         agent: 'bot',
       },
     ],
@@ -102,14 +106,14 @@ const exampleConversations: Conversation[] = [
   },
 ]
 
-const initialState: AppState = {
+const initialState: IAppState = {
   conversations: {
     1: exampleConversations[0],
   },
-  currentConversationId: 1,
+  currentConversationId: '1',
 }
 
-function appReducer(state: AppState, action: Action): AppState {
+function appReducer(state: IAppState, action: IAction): IAppState {
   switch (action.type) {
     case 'ADD_CONVERSATION':
       return {
@@ -184,8 +188,8 @@ function appReducer(state: AppState, action: Action): AppState {
 
 const AppContext = createContext<
   | {
-      state: AppState
-      dispatch: React.Dispatch<Action>
+      state: IAppState
+      dispatch: React.Dispatch<IAction>
     }
   | undefined
 >(undefined)

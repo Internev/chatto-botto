@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import { useAppContext } from '../context/AppContext'
 import { v4 as uuidv4 } from 'uuid'
-import { Message } from '../context/types'
+import { IMessage } from '../context/types'
 import styled from 'styled-components'
+import Message from './Message'
 
 const MessageContainer = styled.div`
   display: flex;
@@ -17,18 +18,6 @@ const MessageBox = styled.div`
   width: 100%;
 `
 
-const Message = styled.div<{ agent: 'user' | 'bot' }>`
-  background-color: ${(props) =>
-    props.agent === 'user' ? 'lightblue' : 'lightgreen'};
-  padding: 8px;
-  margin-top: 8px;
-  border-radius: 8px;
-  width: 500px;
-  max-width: 80%;
-  ${(props) =>
-    props.agent === 'bot' ? 'margin-right: auto;' : 'margin-left: auto;'}
-`
-
 export const MessageDisplay = () => {
   const { state, dispatch } = useAppContext()
   const [newMessageText, setNewMessageText] = useState('')
@@ -40,7 +29,7 @@ export const MessageDisplay = () => {
   const handleSendMessage = () => {
     if (!currentConversation || !newMessageText.trim()) return
 
-    const newMessage: Message = {
+    const newMessage: IMessage = {
       id: uuidv4(),
       userId: 'current-user-id', // Replace with actual user ID
       timestamp: Date.now(),
@@ -64,9 +53,7 @@ export const MessageDisplay = () => {
     <MessageContainer>
       {currentConversation.messages.map((message) => (
         <MessageBox key={message.id}>
-          <Message agent={message.agent}>
-            {message.translations[message.originalLanguage]}
-          </Message>
+          <Message agent={message.agent} translations={message.translations} />
         </MessageBox>
       ))}
     </MessageContainer>
