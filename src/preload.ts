@@ -13,6 +13,14 @@ export const electronAPI = {
     }
   },
   getEnv: (envName: string) => ipcRenderer.invoke('get-env', envName),
+  textToSpeech: async (text: string): Promise<string> => {
+    try {
+      return await ipcRenderer.invoke('text-to-speech', text)
+    } catch (error) {
+      console.error('Error transcribing:', error)
+      throw error
+    }
+  },
 }
 
 process.once('loaded', () => {

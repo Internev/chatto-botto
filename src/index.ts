@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import path from 'path'
 
 import dataReceiver from './api/transcribe'
+import textToSpeech from './api/textToSpeech'
 
 dotenv.config({ path: path.join(app.getAppPath(), '.env') })
 
@@ -46,16 +47,23 @@ app.on('ready', () => {
   ipcMain.handle('transcribe', (_, audioString: string) => {
     return dataReceiver(audioString)
   })
-  ipcMain.handle('get-env', (_, envName: string) => {
-    // Only return specific, allowed environment variables
-    console.log('\ngetting env var, specifically:', envName)
-    const allowedEnvVars = ['ANTHROPIC_API_KEY']
-    if (allowedEnvVars.includes(envName)) {
-      console.log('\n\nGetting env:', envName)
-      return process.env[envName]
-    }
-    return null
-  })
+  ipcMain.handle('text-to-speech', (_, text: string) => {
+    return textToSpeech(text)
+  }),
+    ipcMain.handle('get-env', (_, envName: string) => {
+      // Only return specific, allowed environment variables
+      console.log('\ngetting env var, specifically:', envName)
+      const allowedEnvVars = [
+        'ANTHROPIC_API_KEY',
+        'AWS_ACCESS_KEY_ID',
+        'AWS_SECRET_ACCESS_KEY',
+      ]
+      if (allowedEnvVars.includes(envName)) {
+        console.log('\n\nGetting env:', envName)
+        return process.env[envName]
+      }
+      return null
+    })
   createWindow()
 })
 

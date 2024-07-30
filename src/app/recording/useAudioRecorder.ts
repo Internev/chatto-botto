@@ -36,7 +36,6 @@ const useAudioRecorder = () => {
   }
 
   const startRecording = useCallback(async () => {
-    console.log('startRecording')
     setIsRecording(true)
     setTranscription(null)
     try {

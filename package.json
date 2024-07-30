@@ -48,6 +48,7 @@
   "license": "MIT",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",
+    "@aws-sdk/client-polly": "^3.529.0",
     "@google-cloud/speech": "^6.6.1",
     "@types/uuid": "^10.0.0",
     "dotenv": "^16.4.5",
