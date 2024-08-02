@@ -6,7 +6,7 @@ const dataReceiver = async (audioString: string) => {
   const config = {
     encoding: 'WEBM_OPUS' as 'WEBM_OPUS',
     sampleRateHertz: 48000,
-    languageCode: 'en-US',
+    languageCode: 'ja-JP',
   }
 
   const request = {
