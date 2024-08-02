@@ -30,11 +30,12 @@ const pollyClient = new PollyClient({
 
 const textToSpeech = async (text: string) => {
   const tempParams: SynthesizeSpeechCommandInput = {
+    Engine: 'neural',
     OutputFormat: 'mp3',
     Text: text,
     TextType: 'text',
     VoiceId: 'Takumi',
-    SampleRate: '22050',
+    SampleRate: '24000',
   }
 
   try {
