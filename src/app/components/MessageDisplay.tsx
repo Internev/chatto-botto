@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useAppContext } from '../context/AppContext'
 import { v4 as uuidv4 } from 'uuid'
 import { IMessage } from '../context/types'
 import styled from 'styled-components'
 import Message from './Message'
+import { useInitialise } from '../fetchers/claude'
 
 const MessageContainer = styled.div`
   display: flex;
@@ -19,36 +20,14 @@ const MessageBox = styled.div`
 `
 
 export const MessageDisplay = () => {
-  const { state, dispatch } = useAppContext()
-  const [newMessageText, setNewMessageText] = useState('')
+  const { state } = useAppContext()
+  const { initialiseChat } = useInitialise()
 
   const currentConversation = state.currentConversationId
     ? state.conversations[state.currentConversationId]
     : null
 
-  const handleSendMessage = () => {
-    if (!currentConversation || !newMessageText.trim()) return
-
-    const newMessage: IMessage = {
-      id: uuidv4(),
-      userId: 'current-user-id', // Replace with actual user ID
-      timestamp: Date.now(),
-      translations: {
-        en: newMessageText,
-      },
-      originalLanguage: 'en',
-      agent: 'user',
-    }
-
-    dispatch({
-      type: 'ADD_MESSAGE',
-      conversationId: currentConversation.id,
-      message: newMessage,
-    })
-
-    setNewMessageText('')
-  }
-
+  console.log('Current conversation:', currentConversation)
   return currentConversation ? (
     <MessageContainer>
       {currentConversation.messages.map((message) => (
@@ -58,6 +37,6 @@ export const MessageDisplay = () => {
       ))}
     </MessageContainer>
   ) : (
-    <div>No conversation selected</div>
+    <div onClick={initialiseChat}>Start chatting</div>
   )
 }
