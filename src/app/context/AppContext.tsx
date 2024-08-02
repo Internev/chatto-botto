@@ -7,114 +7,56 @@ import {
   ILanguageCode,
 } from './types'
 
-const exampleConversations: IConversation[] = [
-  {
-    id: '1',
-    participants: ['user-1', 'user-2'],
-    messages: [
-      {
-        id: '1',
-        userId: 'user-1',
-        timestamp: Date.now(),
-        translations: {
-          en: `Hello. How was your weekend?`,
-          ja: 'こんにちは。休みは どうでしたか？',
-          ro: 'Konnichiwa. Yasumi wa dou deshita ka?',
-        },
-        originalLanguage: 'ja',
-        agent: 'bot',
+const exampleConversation: IConversation = {
+  id: '1',
+  participants: ['user-1', 'user-2'],
+  messages: [
+    {
+      id: '1',
+      userId: 'user-1',
+      timestamp: Date.now(),
+      translations: {
+        en: `Hello. How was your weekend?`,
+        ja: 'こんにちは。休みは どうでしたか？',
+        ro: 'Konnichiwa. Yasumi wa dou deshita ka?',
       },
-      {
-        id: '2',
-        userId: 'user-2',
-        timestamp: Date.now(),
-        translations: {
-          en: `On the weekend, I ate dinner with a friend.`,
-          ja: 'しゅうまつは ともだちと ばんごはんを たべました',
-          ro: 'Shuumatsu wa tomodachi to bangohan wo tabemashita.',
-        },
-        originalLanguage: 'ja',
-        agent: 'user',
+      originalLanguage: 'ja',
+      agent: 'bot',
+    },
+    {
+      id: '2',
+      userId: 'user-2',
+      timestamp: Date.now(),
+      translations: {
+        en: `On the weekend, I ate dinner with a friend.`,
+        ja: 'しゅうまつは ともだちと ばんごはんを たべました',
+        ro: 'Shuumatsu wa tomodachi to bangohan wo tabemashita.',
       },
-      {
-        id: '1',
-        userId: 'user-1',
-        timestamp: Date.now(),
-        translations: {
-          en: `That sounds fun. What did you eat?`,
-          ja: 'たのしかったですね。なにを たべましたか？',
-          ro: 'Tanoshikatta desu ne. Nani wo tabemashita ka?',
-        },
-        originalLanguage: 'ja',
-        agent: 'bot',
-      },
-      {
-        id: '1',
-        userId: 'user-1',
-        timestamp: Date.now(),
-        translations: {
-          en: `Um, egg on rice. It was delicious!`,
-          ja: 'ええと、たまごごはんです。おいしかったです！',
-          ro: 'Eeto, tamagogohan desu. Oishikatta desu!',
-        },
-        originalLanguage: 'ja',
-        agent: 'user',
-      },
-      {
-        id: '2',
-        userId: 'user-2',
-        timestamp: Date.now(),
-        translations: {
-          en: `Sounds delicious! Where did you eat?`,
-          ja: 'おいしそう！ どこで たべましたか？',
-          ro: 'Oishisou! Doko de tabemashita ka?',
-        },
-        originalLanguage: 'ja',
-        agent: 'bot',
-      },
-    ],
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
-  {
-    id: '2',
-    participants: ['user-1', 'user-3'],
-    messages: [
-      {
-        id: '1',
-        userId: 'user-1',
-        timestamp: Date.now(),
-        translations: {
-          en: 'Hey, how are you?',
-        },
-        originalLanguage: 'en',
-        agent: 'user',
-      },
-      {
-        id: '2',
-        userId: 'user-3',
-        timestamp: Date.now(),
-        translations: {
-          en: 'I am doing well, thank you!',
-        },
-        originalLanguage: 'en',
-        agent: 'user',
-      },
-    ],
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
-]
+      originalLanguage: 'ja',
+      agent: 'user',
+    },
+  ],
+  createdAt: Date.now(),
+  updatedAt: Date.now(),
+}
 
 const initialState: IAppState = {
   conversations: {
-    1: exampleConversations[0],
+    1: exampleConversation,
   },
-  currentConversationId: '1',
+  currentConversationId: null,
+  initialising: false,
 }
 
 function appReducer(state: IAppState, action: IAction): IAppState {
+  console.log('Action dispatched:', action)
+  console.log('Current state:', state)
   switch (action.type) {
+    case 'SET_INITIALISING':
+      return {
+        ...state,
+        initialising: action.initialising,
+      }
     case 'ADD_CONVERSATION':
       return {
         ...state,
@@ -129,18 +71,17 @@ function appReducer(state: IAppState, action: IAction): IAppState {
         currentConversationId: action.conversationId,
       }
     case 'ADD_MESSAGE':
+      const cId = state.currentConversationId
+      if (!cId) {
+        return state
+      }
+      const newConversation = state.conversations[cId]
+      newConversation.messages.push(action.message)
       return {
         ...state,
         conversations: {
           ...state.conversations,
-          [action.conversationId]: {
-            ...state.conversations[action.conversationId],
-            messages: [
-              ...state.conversations[action.conversationId].messages,
-              action.message,
-            ],
-            updatedAt: Date.now(),
-          },
+          newConversation,
         },
       }
     case 'UPDATE_MESSAGE_TRANSLATION':
@@ -160,22 +101,6 @@ function appReducer(state: IAppState, action: IAction): IAppState {
                         [action.language]: action.translation,
                       },
                     }
-                  : message
-            ),
-          },
-        },
-      }
-    case 'SET_AUDIO_URL':
-      return {
-        ...state,
-        conversations: {
-          ...state.conversations,
-          [action.conversationId]: {
-            ...state.conversations[action.conversationId],
-            messages: state.conversations[action.conversationId].messages.map(
-              (message) =>
-                message.id === action.messageId
-                  ? { ...message, audioUrl: action.audioUrl }
                   : message
             ),
           },

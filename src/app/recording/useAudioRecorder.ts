@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
+import { useAppContext } from '../context/AppContext'
 
 const blobToBase64 = (blob: Blob): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -15,6 +16,7 @@ const blobToBase64 = (blob: Blob): Promise<string> => {
 }
 
 const useAudioRecorder = () => {
+  const { dispatch } = useAppContext()
   const [isRecording, setIsRecording] = useState(false)
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
   const [transcription, setTranscription] = useState<string | null>(null)
@@ -29,6 +31,19 @@ const useAudioRecorder = () => {
       )
       setTranscription(transcriptionResult)
       console.log('Transcription:', transcriptionResult)
+      dispatch({
+        type: 'ADD_MESSAGE',
+        message: {
+          id: '1',
+          userId: 'user-1',
+          timestamp: Date.now(),
+          translations: {
+            ja: transcriptionResult,
+          },
+          originalLanguage: 'ja',
+          agent: 'user',
+        },
+      })
     } catch (error) {
       console.error('Transcription error:', error)
       setTranscription(null)
@@ -40,10 +55,6 @@ const useAudioRecorder = () => {
     setTranscription(null)
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      // const audioTracks = stream.getAudioTracks()
-      // const sampleRate = audioTracks[0].getSettings().sampleRate
-      // console.log('audioTracks:', audioTracks)
-      // console.log('sampleRate:', sampleRate)
       mediaRecorderRef.current = new MediaRecorder(stream)
       chunksRef.current = []
 
