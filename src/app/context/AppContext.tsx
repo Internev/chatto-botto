@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  ReactNode,
+  useEffect,
+} from 'react'
 import {
   IAppState,
   IAction,
@@ -6,31 +12,31 @@ import {
   IMessage,
   ILanguageCode,
 } from './types'
+import { continueClaudeConversation } from '../fetchers/claude'
 
 const exampleConversation: IConversation = {
   id: '1',
-  participants: ['user-1', 'user-2'],
   messages: [
     {
       id: '1',
-      userId: 'user-1',
+      userId: 'botto',
       timestamp: Date.now(),
-      translations: {
-        en: `Hello. How was your weekend?`,
-        ja: 'こんにちは。休みは どうでしたか？',
-        ro: 'Konnichiwa. Yasumi wa dou deshita ka?',
+      languages: {
+        en: [`Hello. How was your weekend?`],
+        main: ['こんにちは。休みは どうでしたか？'],
+        alt: ['Konnichiwa. Yasumi wa dou deshita ka?'],
       },
       originalLanguage: 'ja',
       agent: 'bot',
     },
     {
       id: '2',
-      userId: 'user-2',
+      userId: 'user-1',
       timestamp: Date.now(),
-      translations: {
-        en: `On the weekend, I ate dinner with a friend.`,
-        ja: 'しゅうまつは ともだちと ばんごはんを たべました',
-        ro: 'Shuumatsu wa tomodachi to bangohan wo tabemashita.',
+      languages: {
+        en: [`On the weekend, I ate dinner with a friend.`],
+        main: ['しゅうまつは ともだちと ばんごはんを たべました'],
+        alt: ['Shuumatsu wa tomodachi to bangohan wo tabemashita.'],
       },
       originalLanguage: 'ja',
       agent: 'user',
@@ -84,28 +90,6 @@ function appReducer(state: IAppState, action: IAction): IAppState {
           newConversation,
         },
       }
-    case 'UPDATE_MESSAGE_TRANSLATION':
-      return {
-        ...state,
-        conversations: {
-          ...state.conversations,
-          [action.conversationId]: {
-            ...state.conversations[action.conversationId],
-            messages: state.conversations[action.conversationId].messages.map(
-              (message) =>
-                message.id === action.messageId
-                  ? {
-                      ...message,
-                      translations: {
-                        ...message.translations,
-                        [action.language]: action.translation,
-                      },
-                    }
-                  : message
-            ),
-          },
-        },
-      }
     default:
       return state
   }
@@ -119,8 +103,29 @@ const AppContext = createContext<
   | undefined
 >(undefined)
 
+const getNewClaudeResponse = async (
+  conversation: IConversation,
+  dispatch: React.Dispatch<IAction>
+) => {
+  const newMessage = await continueClaudeConversation(conversation)
+  // dispatch({
+  //   type: 'ADD_MESSAGE',
+  //   message: newMessage,
+  // })
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState)
+
+  useEffect(() => {
+    const conversation = state.conversations[state.currentConversationId]
+    const lastMessage =
+      conversation &&
+      conversation.messages[conversation.messages.length - 1 || 0]
+    if (lastMessage?.agent === 'user') {
+      getNewClaudeResponse(conversation, dispatch)
+    }
+  }, [state.conversations[state.currentConversationId]])
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

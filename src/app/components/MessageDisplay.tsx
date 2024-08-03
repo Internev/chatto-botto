@@ -32,7 +32,7 @@ export const MessageDisplay = () => {
     <MessageContainer>
       {currentConversation.messages.map((message) => (
         <MessageBox key={message.id}>
-          <Message agent={message.agent} translations={message.translations} />
+          <Message agent={message.agent} languages={message.languages} />
         </MessageBox>
       ))}
     </MessageContainer>

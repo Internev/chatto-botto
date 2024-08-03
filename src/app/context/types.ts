@@ -10,13 +10,16 @@ export type ILanguageCode =
   | 'ko'
   | 'zh'
   | 'ro'
+  | 'main'
+  | 'alt'
+  | 'cor'
 
 export interface IMessage {
   id: string
   userId: string
   timestamp: number
-  translations: {
-    [key in ILanguageCode]?: string
+  languages: {
+    [key in ILanguageCode]?: string[]
   }
   originalLanguage: ILanguageCode
   agent: 'user' | 'bot'
@@ -24,7 +27,6 @@ export interface IMessage {
 
 export interface IConversation {
   id: string
-  participants: string[]
   messages: IMessage[]
   createdAt: number
   updatedAt: number

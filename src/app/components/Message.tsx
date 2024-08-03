@@ -19,17 +19,19 @@ const PlayButton = styled.button`
 `
 
 interface MessageProps {
-  translations: { [key: string]: string }
-  agent: string
+  languages: { [key: string]: string[] }
+  agent: 'user' | 'bot'
 }
 
-const Message: React.FC<MessageProps> = ({ translations, agent }) => {
-  const [activeText, setActiveText] = useState(translations['ja'])
+const Message: React.FC<MessageProps> = ({ languages, agent }) => {
+  const [activeText, setActiveText] = useState<string>(
+    languages['main'].join(' ')
+  )
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
 
   const handleTabClick = (language: string) => {
-    const text = translations[language as keyof typeof translations]
-    setActiveText(text)
+    const text = languages[language as keyof typeof languages]
+    setActiveText(text.join(' '))
   }
 
   const handlePlayClick = async () => {
@@ -41,7 +43,7 @@ const Message: React.FC<MessageProps> = ({ translations, agent }) => {
     // todo: fix indexing
     <MessageBox agent={agent}>
       <div>
-        {Object.keys(translations).map((language) => (
+        {Object.keys(languages).map((language) => (
           <button key={language} onClick={() => handleTabClick(language)}>
             {language}
           </button>
