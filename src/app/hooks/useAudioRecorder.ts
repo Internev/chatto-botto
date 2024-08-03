@@ -37,8 +37,8 @@ const useAudioRecorder = () => {
           id: '1',
           userId: 'user-1',
           timestamp: Date.now(),
-          translations: {
-            ja: transcriptionResult,
+          languages: {
+            main: transcriptionResult,
           },
           originalLanguage: 'ja',
           agent: 'user',
