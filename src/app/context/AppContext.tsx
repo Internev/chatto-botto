@@ -108,6 +108,7 @@ const getNewClaudeResponse = async (
   dispatch: React.Dispatch<IAction>
 ) => {
   const newMessage = await continueClaudeConversation(conversation)
+  // const parsedMessage =
   // dispatch({
   //   type: 'ADD_MESSAGE',
   //   message: newMessage,

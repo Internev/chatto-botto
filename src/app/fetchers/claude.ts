@@ -3,6 +3,57 @@ import { v4 as uuid } from 'uuid'
 import { useAppContext } from '../context/AppContext'
 import { basicLevel1 } from '../../prompting/prompts'
 import { IConversation } from '../context/types'
+import {
+  ContentBlock,
+  Message,
+  TextBlock,
+} from '@anthropic-ai/sdk/resources/messages'
+
+// {
+//   "id": "msg_01XFDUDYJgAACzvnptvVoYEL",
+//   "type": "message",
+//   "role": "assistant",
+//   "content": [
+//     {
+//       "type": "text",
+//       "text": "Hello!"
+//     }
+//   ],
+//   "model": "claude-3-5-sonnet-20240620",
+//   "stop_reason": "end_turn",
+//   "stop_sequence": null,
+//   "usage": {
+//     "input_tokens": 12,
+//     "output_tokens": 6
+//   }
+// }
+
+export const parseClaudeResponse = (response: Anthropic.Messages.Message) => {
+  const isTextBlock = (block: ContentBlock): block is TextBlock => {
+    return block.type === 'text'
+  }
+  if (!response.content.every(isTextBlock)) {
+    throw new Error('Unexpected content')
+  }
+  const text = response.content[0].text
+
+  const mainRegex = /<main>(.*?)<\/main>/g
+  const altRegex = /<alt>(.*?)<\/alt>/g
+  const enRegex = /<en>(.*?)<\/en>/g
+  const corRegex = /<cor>(.*?)<\/cor>/g
+
+  const mainMatches = [...text.matchAll(mainRegex)].map((match) => match[1])
+  const altMatches = [...text.matchAll(altRegex)].map((match) => match[1])
+  const enMatches = [...text.matchAll(enRegex)].map((match) => match[1])
+  const corMatches = [...text.matchAll(corRegex)].map((match) => match[1])
+
+  return {
+    main: mainMatches,
+    alt: altMatches,
+    en: enMatches,
+    cor: corMatches,
+  }
+}
 
 // Models:
 // claude-3-5-sonnet-20240620
@@ -24,7 +75,7 @@ const initClaude = async () => {
     messages: [{ role: 'user', content: `I'm ready` }],
   })
 
-  return response
+  return parseClaudeResponse(response)
 }
 
 export const continueClaudeConversation = async (
@@ -45,7 +96,7 @@ export const continueClaudeConversation = async (
     messages: [{ role: 'user', content: `I'm ready` }, ...claudeConversation],
   })
 
-  return response
+  return parseClaudeResponse(response)
 }
 
 export const parseStateToClaude = (
@@ -85,25 +136,6 @@ export const parseStateToClaude = (
   return messages
 }
 
-export const parseClaudeResponse = (text: string) => {
-  const mainRegex = /<main>(.*?)<\/main>/g
-  const altRegex = /<alt>(.*?)<\/alt>/g
-  const enRegex = /<en>(.*?)<\/en>/g
-  const corRegex = /<cor>(.*?)<\/cor>/g
-
-  const mainMatches = [...text.matchAll(mainRegex)].map((match) => match[1])
-  const altMatches = [...text.matchAll(altRegex)].map((match) => match[1])
-  const enMatches = [...text.matchAll(enRegex)].map((match) => match[1])
-  const corMatches = [...text.matchAll(corRegex)].map((match) => match[1])
-
-  return {
-    main: mainMatches,
-    alt: altMatches,
-    en: enMatches,
-    cor: corMatches,
-  }
-}
-
 export function useInitialise() {
   const { state, dispatch } = useAppContext()
 
@@ -117,8 +149,26 @@ export function useInitialise() {
       // const message = await initClaude()
       const message =
         '<main>こんにちは、友達!</main> <alt>Konnichiwa, tomodachi!</alt> <en>Hello, friend!</en>\n\nHow are you today? \n<main>今日はどうですか?</main> <alt>Kyō wa dō desu ka?</alt> <en>How are you today?</en>'
-      console.log('Message:', message)
-      const parsed = parseClaudeResponse(message)
+
+      const response: Message = {
+        id: 'msg_01XFDUDYJgAACzvnptvVoYEL',
+        type: 'message',
+        role: 'assistant',
+        content: [
+          {
+            type: 'text',
+            text: message,
+          },
+        ],
+        model: 'claude-3-5-sonnet-20240620',
+        stop_reason: 'end_turn',
+        stop_sequence: null,
+        usage: {
+          input_tokens: 12,
+          output_tokens: 6,
+        },
+      }
+      const parsed = parseClaudeResponse(response)
       console.log('Parsed:', parsed)
       const newConversationId = uuid()
       dispatch({

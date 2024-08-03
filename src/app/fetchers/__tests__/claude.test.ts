@@ -1,5 +1,6 @@
 import { parseStateToClaude, parseClaudeResponse } from '../claude'
 import { IConversation } from '../../context/types'
+import { Message } from '@anthropic-ai/sdk/resources/messages'
 
 describe('parseStateToClaude', () => {
   it('should return the last message content', () => {
@@ -57,7 +58,26 @@ describe('parseClaudeResponse', () => {
     const message =
       '<main>こんにちは、友達!</main> <alt>Konnichiwa, tomodachi!</alt> <en>Hello, friend!</en>\n\nHow are you today? \n<main>今日はどうですか?</main> <alt>Kyō wa dō desu ka?</alt> <en>How are you today?</en>'
 
-    const parsed = parseClaudeResponse(message)
+    const response: Message = {
+      id: 'msg_01XFDUDYJgAACzvnptvVoYEL',
+      type: 'message',
+      role: 'assistant',
+      content: [
+        {
+          type: 'text',
+          text: message,
+        },
+      ],
+      model: 'claude-3-5-sonnet-20240620',
+      stop_reason: 'end_turn',
+      stop_sequence: null,
+      usage: {
+        input_tokens: 12,
+        output_tokens: 6,
+      },
+    }
+
+    const parsed = parseClaudeResponse(response)
 
     expect(parsed).toEqual({
       main: ['こんにちは、友達!', '今日はどうですか?'],
