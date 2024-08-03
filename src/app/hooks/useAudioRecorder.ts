@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react'
 import { useAppContext } from '../context/AppContext'
+import { useAddMessage } from './useAddMessage'
 
 const blobToBase64 = (blob: Blob): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -16,12 +17,12 @@ const blobToBase64 = (blob: Blob): Promise<string> => {
 }
 
 const useAudioRecorder = () => {
-  const { dispatch } = useAppContext()
   const [isRecording, setIsRecording] = useState(false)
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
   const [transcription, setTranscription] = useState<string | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
+  const addMessage = useAddMessage()
 
   const transcribeAudio = async (blob: Blob) => {
     try {
@@ -31,19 +32,7 @@ const useAudioRecorder = () => {
       )
       setTranscription(transcriptionResult)
       console.log('Transcription:', transcriptionResult)
-      dispatch({
-        type: 'ADD_MESSAGE',
-        message: {
-          id: '1',
-          userId: 'user-1',
-          timestamp: Date.now(),
-          languages: {
-            main: transcriptionResult,
-          },
-          originalLanguage: 'ja',
-          agent: 'user',
-        },
-      })
+      addMessage({ main: [transcriptionResult] })
     } catch (error) {
       console.error('Transcription error:', error)
       setTranscription(null)

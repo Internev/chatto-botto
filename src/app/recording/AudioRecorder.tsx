@@ -1,5 +1,5 @@
 import React from 'react'
-import useAudioRecorder from './useAudioRecorder'
+import useAudioRecorder from '../hooks/useAudioRecorder'
 import MicrophoneButton from '../components/MicrophoneButton'
 
 const AudioRecorder: React.FC = () => {
