@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { v4 as uuid } from 'uuid'
 import { useAppContext } from '../context/AppContext'
 import { basicLevel1 } from '../../prompting/prompts'
+import { IConversation } from '../context/types'
 
 // Models:
 // claude-3-5-sonnet-20240620
@@ -16,17 +17,75 @@ const initClaude = async () => {
     apiKey: key,
   })
 
-  const message = await anthropic.messages.create({
+  const response = await anthropic.messages.create({
     model: 'claude-3-haiku-20240307',
     max_tokens: 1024,
     system: basicLevel1,
     messages: [{ role: 'user', content: `I'm ready` }],
   })
 
-  return message
+  return response
 }
 
-const parseClaudeResponse = (text: string) => {
+export const continueClaudeConversation = async (
+  conversation: IConversation
+) => {
+  const key = await window.electronAPI.getEnv('ANTHROPIC_API_KEY')
+  console.log('API key:', key)
+  const anthropic = new Anthropic({
+    apiKey: key,
+  })
+
+  const claudeConversation = parseStateToClaude(conversation)
+
+  const response = await anthropic.messages.create({
+    model: 'claude-3-haiku-20240307',
+    max_tokens: 1024,
+    system: basicLevel1,
+    messages: [{ role: 'user', content: `I'm ready` }, ...claudeConversation],
+  })
+
+  return response
+}
+
+export const parseStateToClaude = (
+  conversation: IConversation
+): Anthropic.Messages.MessageParam[] => {
+  const messages = conversation.messages.map((message) => {
+    const mLength = message.languages.main.length
+    let content = ''
+    if (message.agent === 'bot') {
+      for (let i = 0; i < mLength; i++) {
+        const main = message.languages.main[i]
+          ? `<main>${message.languages.main[i]}</main>`
+          : ''
+        const alt = message.languages.alt?.[i]
+          ? `<alt>${message.languages.alt[i]}</alt>`
+          : ''
+        const en = message.languages.en?.[i]
+          ? `<en>${message.languages.en[i]}</en>`
+          : ''
+        const cor = message.languages.cor?.[i]
+          ? `<cor>${message.languages.cor[i]}</cor>`
+          : ''
+
+        content += `${main} ${alt} ${en} ${cor}`
+      }
+    } else {
+      content = message.languages.main.join(' ')
+    }
+    return {
+      role:
+        message.agent === 'bot'
+          ? 'assistant'
+          : ('user' as 'user' | 'assistant'),
+      content,
+    }
+  })
+  return messages
+}
+
+export const parseClaudeResponse = (text: string) => {
   const mainRegex = /<main>(.*?)<\/main>/g
   const altRegex = /<alt>(.*?)<\/alt>/g
   const enRegex = /<en>(.*?)<\/en>/g
@@ -38,10 +97,10 @@ const parseClaudeResponse = (text: string) => {
   const corMatches = [...text.matchAll(corRegex)].map((match) => match[1])
 
   return {
-    main: mainMatches.join(' '),
-    alt: altMatches.join(' '),
-    en: enMatches.join(' '),
-    cor: corMatches.join(' '),
+    main: mainMatches,
+    alt: altMatches,
+    en: enMatches,
+    cor: corMatches,
   }
 }
 
@@ -66,151 +125,14 @@ export function useInitialise() {
         type: 'ADD_CONVERSATION',
         conversation: {
           id: newConversationId,
-          participants: ['user-1', 'user-2'],
           messages: [
             {
-              id: '1',
-              userId: 'user-1',
+              id: uuid(),
+              userId: 'botto',
               timestamp: Date.now(),
-              translations: {
-                en: `Hello. How was your weekend?`,
-                ja: 'こんにちは。休みは どうでしたか？',
-                ro: 'Konnichiwa. Yasumi wa dou deshita ka?',
-              },
-              originalLanguage: 'ja',
+              languages: parsed,
+              originalLanguage: 'ja', // TODO: generalise
               agent: 'bot',
-            },
-            {
-              id: '2',
-              userId: 'user-2',
-              timestamp: Date.now(),
-              translations: {
-                en: `On the weekend, I ate dinner with a friend.`,
-                ja: 'しゅうまつは ともだちと ばんごはんを たべました',
-                ro: 'Shuumatsu wa tomodachi to bangohan wo tabemashita.',
-              },
-              originalLanguage: 'ja',
-              agent: 'user',
-            },
-            {
-              id: '1',
-              userId: 'user-1',
-              timestamp: Date.now(),
-              translations: {
-                en: `Hello. How was your weekend?`,
-                ja: 'こんにちは。休みは どうでしたか？',
-                ro: 'Konnichiwa. Yasumi wa dou deshita ka?',
-              },
-              originalLanguage: 'ja',
-              agent: 'bot',
-            },
-            {
-              id: '2',
-              userId: 'user-2',
-              timestamp: Date.now(),
-              translations: {
-                en: `On the weekend, I ate dinner with a friend.`,
-                ja: 'しゅうまつは ともだちと ばんごはんを たべました',
-                ro: 'Shuumatsu wa tomodachi to bangohan wo tabemashita.',
-              },
-              originalLanguage: 'ja',
-              agent: 'user',
-            },
-            {
-              id: '1',
-              userId: 'user-1',
-              timestamp: Date.now(),
-              translations: {
-                en: `Hello. How was your weekend?`,
-                ja: 'こんにちは。休みは どうでしたか？',
-                ro: 'Konnichiwa. Yasumi wa dou deshita ka?',
-              },
-              originalLanguage: 'ja',
-              agent: 'bot',
-            },
-            {
-              id: '2',
-              userId: 'user-2',
-              timestamp: Date.now(),
-              translations: {
-                en: `On the weekend, I ate dinner with a friend.`,
-                ja: 'しゅうまつは ともだちと ばんごはんを たべました',
-                ro: 'Shuumatsu wa tomodachi to bangohan wo tabemashita.',
-              },
-              originalLanguage: 'ja',
-              agent: 'user',
-            },
-            {
-              id: '1',
-              userId: 'user-1',
-              timestamp: Date.now(),
-              translations: {
-                en: `Hello. How was your weekend?`,
-                ja: 'こんにちは。休みは どうでしたか？',
-                ro: 'Konnichiwa. Yasumi wa dou deshita ka?',
-              },
-              originalLanguage: 'ja',
-              agent: 'bot',
-            },
-            {
-              id: '2',
-              userId: 'user-2',
-              timestamp: Date.now(),
-              translations: {
-                en: `On the weekend, I ate dinner with a friend.`,
-                ja: 'しゅうまつは ともだちと ばんごはんを たべました',
-                ro: 'Shuumatsu wa tomodachi to bangohan wo tabemashita.',
-              },
-              originalLanguage: 'ja',
-              agent: 'user',
-            },
-            {
-              id: '1',
-              userId: 'user-1',
-              timestamp: Date.now(),
-              translations: {
-                en: `Hello. How was your weekend?`,
-                ja: 'こんにちは。休みは どうでしたか？',
-                ro: 'Konnichiwa. Yasumi wa dou deshita ka?',
-              },
-              originalLanguage: 'ja',
-              agent: 'bot',
-            },
-            {
-              id: '2',
-              userId: 'user-2',
-              timestamp: Date.now(),
-              translations: {
-                en: `On the weekend, I ate dinner with a friend.`,
-                ja: 'しゅうまつは ともだちと ばんごはんを たべました',
-                ro: 'Shuumatsu wa tomodachi to bangohan wo tabemashita.',
-              },
-              originalLanguage: 'ja',
-              agent: 'user',
-            },
-            {
-              id: '1',
-              userId: 'user-1',
-              timestamp: Date.now(),
-              translations: {
-                en: `Hello. How was your weekend?`,
-                ja: 'こんにちは。休みは どうでしたか？',
-                ro: 'Konnichiwa. Yasumi wa dou deshita ka?',
-              },
-              originalLanguage: 'ja',
-              agent: 'bot',
-            },
-            {
-              id: '2',
-              userId: 'user-2',
-              timestamp: Date.now(),
-              translations: {
-                en: `On the weekend, I ate dinner with a friend.`,
-                ja: 'しゅうまつは ともだちと ばんごはんを たべました',
-                ro: 'Shuumatsu wa tomodachi to bangohan wo tabemashita.',
-              },
-              originalLanguage: 'ja',
-              agent: 'user',
             },
           ],
           createdAt: Date.now(),
