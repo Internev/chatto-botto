@@ -5,6 +5,8 @@ import { IMessage } from '../context/types'
 import styled from 'styled-components'
 import Message from './Message'
 import { useInitialise } from '../fetchers/claude'
+import { useAddMessage } from '../hooks/useAddMessage'
+import { continueClaudeConversation } from '../fetchers/claude'
 
 const MessageContainer = styled.div`
   display: flex;
@@ -22,6 +24,24 @@ const MessageBox = styled.div`
 export const MessageDisplay = () => {
   const { state } = useAppContext()
   const { initialiseChat } = useInitialise()
+  const addMessage = useAddMessage()
+
+  useEffect(() => {
+    const fetchAndAddMessage = async () => {
+      console.log('useEffect triggered', state.currentConversationId)
+      const conversation = state.conversations[state.currentConversationId]
+      const lastMessage =
+        conversation &&
+        conversation.messages[conversation.messages.length - 1 || 0]
+      if (lastMessage?.agent === 'user') {
+        console.log('User message detected. Getting new Claude response...')
+        const languages = await continueClaudeConversation(conversation)
+        addMessage(languages, 'botto', 'ja', 'bot')
+      }
+    }
+
+    fetchAndAddMessage()
+  }, [state.conversations[state.currentConversationId]])
 
   const currentConversation = state.currentConversationId
     ? state.conversations[state.currentConversationId]

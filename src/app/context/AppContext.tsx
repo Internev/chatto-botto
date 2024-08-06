@@ -5,14 +5,9 @@ import React, {
   ReactNode,
   useEffect,
 } from 'react'
-import {
-  IAppState,
-  IAction,
-  IConversation,
-  IMessage,
-  ILanguageCode,
-} from './types'
+import { IAppState, IAction, IConversation } from './types'
 import { continueClaudeConversation } from '../fetchers/claude'
+import { useAddMessage } from '../hooks/useAddMessage'
 
 const exampleConversation: IConversation = {
   id: '1',
@@ -81,13 +76,13 @@ function appReducer(state: IAppState, action: IAction): IAppState {
       if (!cId) {
         return state
       }
-      const newConversation = state.conversations[cId]
+      const newConversation = { ...state.conversations[cId] }
       newConversation.messages.push(action.message)
       return {
         ...state,
         conversations: {
           ...state.conversations,
-          newConversation,
+          [cId]: newConversation,
         },
       }
     default:
@@ -103,30 +98,14 @@ const AppContext = createContext<
   | undefined
 >(undefined)
 
-const getNewClaudeResponse = async (
-  conversation: IConversation,
-  dispatch: React.Dispatch<IAction>
-) => {
-  const newMessage = await continueClaudeConversation(conversation)
-  // const parsedMessage =
-  // dispatch({
-  //   type: 'ADD_MESSAGE',
-  //   message: newMessage,
-  // })
+const getNewClaudeResponse = async (conversation: IConversation) => {
+  console.log('Getting new Claude response...')
+  const languages = await continueClaudeConversation(conversation)
+  return languages
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState)
-
-  useEffect(() => {
-    const conversation = state.conversations[state.currentConversationId]
-    const lastMessage =
-      conversation &&
-      conversation.messages[conversation.messages.length - 1 || 0]
-    if (lastMessage?.agent === 'user') {
-      getNewClaudeResponse(conversation, dispatch)
-    }
-  }, [state.conversations[state.currentConversationId]])
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>
