@@ -20,14 +20,15 @@ const PlayButton = styled.button`
 
 interface MessageProps {
   languages: { [key: string]: string[] }
+  audioUrls: { [key: string]: string }
   agent: 'user' | 'bot'
 }
 
-const Message: React.FC<MessageProps> = ({ languages, agent }) => {
+const Message: React.FC<MessageProps> = ({ languages, agent, audioUrls }) => {
   const [activeText, setActiveText] = useState<string>(
     languages['main'].join(' ')
   )
-  const [audioUrl, setAudioUrl] = useState<string | null>(null)
+  const [audioUrl, setAudioUrl] = useState<string | undefined>(audioUrls?.main)
 
   const handleTabClick = (language: string) => {
     const text = languages[language as keyof typeof languages]
@@ -54,7 +55,7 @@ const Message: React.FC<MessageProps> = ({ languages, agent }) => {
         {activeText}
       </div>
       {audioUrl && (
-        <audio controls>
+        <audio controls autoPlay>
           <source src={audioUrl} type="audio/mpeg" />
           Your browser does not support the audio element.
         </audio>

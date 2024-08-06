@@ -24,7 +24,7 @@ const MessageBox = styled.div`
 export const MessageDisplay = () => {
   const { state } = useAppContext()
   const { initialiseChat } = useInitialise()
-  const addMessage = useAddMessage()
+  const { addMessage, updateMessage } = useAddMessage()
 
   useEffect(() => {
     const fetchAndAddMessage = async () => {
@@ -36,10 +36,26 @@ export const MessageDisplay = () => {
       if (lastMessage?.agent === 'user') {
         console.log('User message detected. Getting new Claude response...')
         const languages = await continueClaudeConversation(conversation)
-        addMessage(languages, 'botto', 'ja', 'bot')
+        addMessage({
+          languages,
+          userId: 'botto',
+          originalLanguage: 'ja',
+          agent: 'bot',
+        })
+      } else if (lastMessage?.agent === 'bot' && !lastMessage.audioUrls?.main) {
+        console.log('Bot message detected. Generating audio...')
+        const activeText = lastMessage.languages['main'].join(' ')
+        const speechBase64 = await window.electronAPI.textToSpeech(activeText)
+        const audioUrl = 'data:audio/mp3;base64,' + speechBase64
+        updateMessage({
+          ...lastMessage,
+          audioUrls: {
+            ...lastMessage.audioUrls,
+            main: audioUrl,
+          },
+        })
       }
     }
-
     fetchAndAddMessage()
   }, [state.conversations[state.currentConversationId]])
 
@@ -52,7 +68,11 @@ export const MessageDisplay = () => {
     <MessageContainer>
       {currentConversation.messages.map((message) => (
         <MessageBox key={message.id}>
-          <Message agent={message.agent} languages={message.languages} />
+          <Message
+            agent={message.agent}
+            languages={message.languages}
+            audioUrls={message.audioUrls}
+          />
         </MessageBox>
       ))}
     </MessageContainer>

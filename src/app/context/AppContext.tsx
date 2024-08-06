@@ -21,6 +21,7 @@ const exampleConversation: IConversation = {
         main: ['こんにちは。休みは どうでしたか？'],
         alt: ['Konnichiwa. Yasumi wa dou deshita ka?'],
       },
+      audioUrls: {},
       originalLanguage: 'ja',
       agent: 'bot',
     },
@@ -33,6 +34,7 @@ const exampleConversation: IConversation = {
         main: ['しゅうまつは ともだちと ばんごはんを たべました'],
         alt: ['Shuumatsu wa tomodachi to bangohan wo tabemashita.'],
       },
+      audioUrls: {},
       originalLanguage: 'ja',
       agent: 'user',
     },
@@ -76,13 +78,39 @@ function appReducer(state: IAppState, action: IAction): IAppState {
       if (!cId) {
         return state
       }
-      const newConversation = { ...state.conversations[cId] }
-      newConversation.messages.push(action.message)
+      const newAddMessageConversation = { ...state.conversations[cId] }
+      newAddMessageConversation.messages.push(action.message)
       return {
         ...state,
         conversations: {
           ...state.conversations,
-          [cId]: newConversation,
+          [cId]: newAddMessageConversation,
+        },
+      }
+    case 'UPDATE_MESSAGE':
+      const ccId = state.currentConversationId
+      if (!ccId) {
+        return state
+      }
+      const newUpdateMessageConversation = { ...state.conversations[ccId] }
+      console.log(
+        'orig message length:',
+        newUpdateMessageConversation.messages.length
+      )
+
+      newUpdateMessageConversation.messages =
+        newUpdateMessageConversation.messages.map((m) =>
+          m.id === action.message.id ? action.message : m
+        )
+      console.log(
+        'message length:',
+        newUpdateMessageConversation.messages.length
+      )
+      return {
+        ...state,
+        conversations: {
+          ...state.conversations,
+          [ccId]: newUpdateMessageConversation,
         },
       }
     default:

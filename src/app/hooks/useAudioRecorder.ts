@@ -22,7 +22,7 @@ const useAudioRecorder = () => {
   const [transcription, setTranscription] = useState<string | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
-  const addMessage = useAddMessage()
+  const { addMessage } = useAddMessage()
 
   const transcribeAudio = async (blob: Blob) => {
     try {
@@ -32,7 +32,7 @@ const useAudioRecorder = () => {
       )
       setTranscription(transcriptionResult)
       console.log('Transcription:', transcriptionResult)
-      addMessage({ main: [transcriptionResult] })
+      addMessage({ languages: { main: [transcriptionResult] } })
     } catch (error) {
       console.error('Transcription error:', error)
       setTranscription(null)

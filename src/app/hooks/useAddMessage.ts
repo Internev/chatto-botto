@@ -6,17 +6,21 @@ export const useAddMessage = () => {
   const { dispatch } = useAppContext()
 
   const addMessage = useCallback(
-    (
-      languages: { [key in ILanguageCode]?: string[] },
+    ({
+      id = Date.now().toString(),
+      timestamp = Date.now(),
+      languages = {},
+      audioUrls = {},
       userId = 'user-1',
-      originalLanguage = 'ja' as ILanguageCode,
-      agent = 'user' as 'user' | 'bot'
-    ) => {
+      originalLanguage = 'ja',
+      agent = 'user',
+    }: Partial<IMessage>) => {
       const message: IMessage = {
-        id: Date.now().toString(),
+        id,
         userId,
-        timestamp: Date.now(),
+        timestamp,
         languages,
+        audioUrls,
         originalLanguage,
         agent,
       }
@@ -29,7 +33,35 @@ export const useAddMessage = () => {
     [dispatch]
   )
 
-  return addMessage
+  const updateMessage = useCallback(
+    ({
+      id = Date.now().toString(),
+      timestamp = Date.now(),
+      languages = {},
+      audioUrls = {},
+      userId = 'user-1',
+      originalLanguage = 'ja',
+      agent = 'user',
+    }: Partial<IMessage>) => {
+      const message: IMessage = {
+        id,
+        userId,
+        timestamp,
+        languages,
+        audioUrls,
+        originalLanguage,
+        agent,
+      }
+
+      dispatch({
+        type: 'UPDATE_MESSAGE',
+        message,
+      })
+    },
+    [dispatch]
+  )
+
+  return { addMessage, updateMessage }
 }
 
 // Example usage in another hook or component:

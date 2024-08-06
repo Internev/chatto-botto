@@ -21,6 +21,9 @@ export interface IMessage {
   languages: {
     [key in ILanguageCode]?: string[]
   }
+  audioUrls?: {
+    [key in ILanguageCode]?: string
+  }
   originalLanguage: ILanguageCode
   agent: 'user' | 'bot'
 }
@@ -45,10 +48,4 @@ export type IAction =
   | { type: 'ADD_CONVERSATION'; conversation: IConversation }
   | { type: 'SET_CURRENT_CONVERSATION'; conversationId: string }
   | { type: 'ADD_MESSAGE'; message: IMessage }
-  | {
-      type: 'UPDATE_MESSAGE_TRANSLATION'
-      conversationId: string
-      messageId: string
-      language: ILanguageCode
-      translation: string
-    }
+  | { type: 'UPDATE_MESSAGE'; message: IMessage }
