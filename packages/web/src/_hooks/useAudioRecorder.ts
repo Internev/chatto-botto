@@ -28,11 +28,19 @@ export const useAudioRecorder = () => {
   const transcribeAudio = async (blob: Blob) => {
     try {
       const base64String = await blobToBase64(blob)
-      const transcriptionResult = '' // await window.electronAPI.transcribe(
-      //   base64String
-      // )
+      const transcriptionResponse = await fetch(
+        'http://localhost:3000/api/transcribe',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ audioString: base64String }),
+        }
+      )
+      const transcriptionResult = (await transcriptionResponse.json())
+        .transcription
       setTranscription(transcriptionResult)
-      console.log('Transcription:', transcriptionResult)
       addMessage({ languages: { main: [transcriptionResult] } })
     } catch (error) {
       console.error('Transcription error:', error)
@@ -59,7 +67,6 @@ export const useAudioRecorder = () => {
         console.log('stopping recording')
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
         setAudioBlob(blob)
-        console.log('got a blob:', blob)
         await transcribeAudio(blob)
       }
 

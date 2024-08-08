@@ -1,9 +1,12 @@
+import { encode } from 'js-base64'
+
+import transcribeAudio from './transcribe'
+
 export async function POST(request: Request) {
   try {
-    console.log('received request:', request)
-    // Replace with your actual database access logic
-    console.log('🥶🥶🥶🥶🥶🥶🥶🥶')
-    return Response.json({ data: 'I guess a transcription?' })
+    const { audioString } = await request.json()
+    const transcription = await transcribeAudio(audioString)
+    return Response.json({ transcription })
   } catch (error) {
     return { error: 'Failed to fetch data' }
   }
