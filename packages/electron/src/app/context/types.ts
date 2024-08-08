@@ -45,7 +45,6 @@ export interface IAppState {
 
 export type IAction =
   | { type: 'SET_INITIALISING'; initialising: boolean }
-  | { type: 'ADD_CONVERSATION'; conversation: IConversation }
-  | { type: 'SET_CURRENT_CONVERSATION'; conversationId: string }
+  | { type: 'SET_CONVERSATION'; conversation: IConversation }
   | { type: 'ADD_MESSAGE'; message: IMessage }
   | { type: 'UPDATE_MESSAGE'; message: IMessage }

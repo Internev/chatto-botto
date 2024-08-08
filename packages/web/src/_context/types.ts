@@ -36,16 +36,12 @@ export interface IConversation {
 }
 
 export interface IAppState {
-  conversations: {
-    [id: string]: IConversation
-  }
-  currentConversationId: string | null
+  conversation: IConversation
   initialising: boolean
 }
 
 export type IAction =
   | { type: 'SET_INITIALISING'; initialising: boolean }
-  | { type: 'ADD_CONVERSATION'; conversation: IConversation }
-  | { type: 'SET_CURRENT_CONVERSATION'; conversationId: string }
+  | { type: 'SET_CONVERSATION'; conversation: IConversation }
   | { type: 'ADD_MESSAGE'; message: IMessage }
   | { type: 'UPDATE_MESSAGE'; message: IMessage }

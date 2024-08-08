@@ -60,18 +60,13 @@ function appReducer(state: IAppState, action: IAction): IAppState {
         ...state,
         initialising: action.initialising,
       }
-    case 'ADD_CONVERSATION':
+    case 'SET_CONVERSATION':
       return {
         ...state,
         conversations: {
           ...state.conversations,
           [action.conversation.id]: action.conversation,
         },
-      }
-    case 'SET_CURRENT_CONVERSATION':
-      return {
-        ...state,
-        currentConversationId: action.conversationId,
       }
     case 'ADD_MESSAGE':
       const cId = state.currentConversationId

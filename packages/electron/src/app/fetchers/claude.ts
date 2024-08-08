@@ -172,7 +172,7 @@ export function useInitialise() {
       console.log('Parsed:', parsed)
       const newConversationId = uuid()
       dispatch({
-        type: 'ADD_CONVERSATION',
+        type: 'SET_CONVERSATION',
         conversation: {
           id: newConversationId,
           messages: [
@@ -188,10 +188,6 @@ export function useInitialise() {
           createdAt: Date.now(),
           updatedAt: Date.now(),
         },
-      })
-      dispatch({
-        type: 'SET_CURRENT_CONVERSATION',
-        conversationId: newConversationId,
       })
     }
   }

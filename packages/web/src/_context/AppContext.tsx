@@ -46,10 +46,7 @@ const exampleConversation: IConversation = {
 }
 
 const initialState: IAppState = {
-  conversations: {
-    1: exampleConversation,
-  },
-  currentConversationId: null,
+  conversation: exampleConversation,
   initialising: false,
 }
 
@@ -62,39 +59,20 @@ function appReducer(state: IAppState, action: IAction): IAppState {
         ...state,
         initialising: action.initialising,
       }
-    case 'ADD_CONVERSATION':
+    case 'SET_CONVERSATION':
       return {
         ...state,
-        conversations: {
-          ...state.conversations,
-          [action.conversation.id]: action.conversation,
-        },
-      }
-    case 'SET_CURRENT_CONVERSATION':
-      return {
-        ...state,
-        currentConversationId: action.conversationId,
+        conversation: action.conversation,
       }
     case 'ADD_MESSAGE':
-      const cId = state.currentConversationId
-      if (!cId) {
-        return state
-      }
-      const newAddMessageConversation = { ...state.conversations[cId] }
+      const newAddMessageConversation = { ...state.conversation }
       newAddMessageConversation.messages.push(action.message)
       return {
         ...state,
-        conversations: {
-          ...state.conversations,
-          [cId]: newAddMessageConversation,
-        },
+        conversation: newAddMessageConversation,
       }
     case 'UPDATE_MESSAGE':
-      const ccId = state.currentConversationId
-      if (!ccId) {
-        return state
-      }
-      const newUpdateMessageConversation = { ...state.conversations[ccId] }
+      const newUpdateMessageConversation = { ...state.conversation }
       console.log(
         'orig message length:',
         newUpdateMessageConversation.messages.length
@@ -110,10 +88,7 @@ function appReducer(state: IAppState, action: IAction): IAppState {
       )
       return {
         ...state,
-        conversations: {
-          ...state.conversations,
-          [ccId]: newUpdateMessageConversation,
-        },
+        conversation: newUpdateMessageConversation,
       }
     default:
       return state
