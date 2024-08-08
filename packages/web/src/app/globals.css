@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  .underline-magical {
+    background-image: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 0.2em;
+    background-position: 0 88%;
+    transition: background-size 0.25s ease-in;
+    cursor: pointer;
+    &:hover {
+      background-size: 100% 88%;
+    }
+  }
+
+  .animated-text-svg {
+    fill: none;
+    stroke-width: 3;
+    stroke-linejoin: round;
+    stroke-dasharray: 70 330;
+    stroke-dashoffset: 0;
+    -webkit-animation: stroke 6s infinite linear;
+    animation: stroke 6s infinite linear;
+  }
+  .animated-text-svg:nth-child(5n + 1) {
+    stroke: #84fab0;
+    -webkit-animation-delay: -1.2s;
+    animation-delay: -1.2s;
+  }
+  .animated-text-svg:nth-child(5n + 2) {
+    stroke: #8fd3f4;
+    -webkit-animation-delay: -2.4s;
+    animation-delay: -2.4s;
+  }
+  .animated-text-svg:nth-child(5n + 3) {
+    stroke: #e9f1df;
+    -webkit-animation-delay: -3.6s;
+    animation-delay: -3.6s;
+  }
+  .animated-text-svg:nth-child(5n + 4) {
+    stroke: #56d9cd;
+    -webkit-animation-delay: -4.8s;
+    animation-delay: -4.8s;
+  }
+  .animated-text-svg:nth-child(5n + 5) {
+    stroke: #bb81fc;
+    -webkit-animation-delay: -6s;
+    animation-delay: -6s;
+  }
+
+  @-webkit-keyframes stroke {
+    100% {
+      stroke-dashoffset: -400;
+    }
+  }
+  @keyframes stroke {
+    100% {
+      stroke-dashoffset: -400;
+    }
+  }
+
+  .box-magical {
+    --mask: linear-gradient(#000 0 0) center/calc(100% - 8px) calc(100% - 8px)
+        no-repeat,
+      conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 0
+        0 /8px 4px space no-repeat,
+      conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg)
+        0 100%/8px 4px space no-repeat,
+      conic-gradient(from 45deg at left, #0000, #000 1deg 89deg, #0000 90deg) 0
+        0 /4px 8px no-repeat space,
+      conic-gradient(from -135deg at right, #0000, #000 1deg 89deg, #0000 90deg)
+        100% 0/4px 8px no-repeat space;
+    -webkit-mask: var(--mask);
+    mask: var(--mask);
+  }
+}
