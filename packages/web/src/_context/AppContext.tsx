@@ -9,7 +9,6 @@ import React, {
 } from 'react'
 import { IAppState, IAction, IConversation } from './types'
 // import { continueClaudeConversation } from '../fetchers/claude'
-import { useAddMessage } from '@/_hooks/useAddMessage'
 
 const exampleConversation: IConversation = {
   id: '1',
