@@ -17,6 +17,7 @@ const transcribe = async (audioString: string) => {
   }
 
   console.log('sending request to google')
+  const startTime = Date.now()
   try {
     const data = await client.recognize(request)
     if (!data || !data[0] || !data[0].results) {
@@ -26,6 +27,7 @@ const transcribe = async (audioString: string) => {
       .map((result) => result?.alternatives?.[0].transcript)
       .join('\n')
 
+    console.log('time taken:', Date.now() - startTime)
     return transcription
   } catch (error) {
     console.error('Error:', error)
