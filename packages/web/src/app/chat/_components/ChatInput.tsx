@@ -3,8 +3,8 @@ import { useAudioRecorder } from '@/_hooks/useAudioRecorder'
 const MicIcon: React.FC<{ isRecording: boolean }> = ({ isRecording }) => (
   <svg
     fill={isRecording ? '#ffffff' : '#2e2e2e'}
-    width="40px"
-    height="40px"
+    width="38px"
+    height="38px"
     viewBox="0 0 32 32"
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"
@@ -14,11 +14,7 @@ const MicIcon: React.FC<{ isRecording: boolean }> = ({ isRecording }) => (
   </svg>
 )
 
-interface ChatInputProps {
-  onSendMessage: (message: string) => void
-}
-
-const ChatInput: React.FC<ChatInputProps> = () => {
+const ChatInput: React.FC = () => {
   const {
     isRecording,
     startRecording,
