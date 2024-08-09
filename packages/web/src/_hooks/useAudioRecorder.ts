@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react'
 
 import { useAppContext } from '@/_context/AppContext'
 import { useAddMessage } from './useAddMessage'
+import transcribe from '@/_actions/transcribe'
 
 const blobToBase64 = (blob: Blob): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -28,18 +29,10 @@ export const useAudioRecorder = () => {
   const transcribeAudio = async (blob: Blob) => {
     try {
       const base64String = await blobToBase64(blob)
-      const transcriptionResponse = await fetch(
-        'http://localhost:3000/api/transcribe',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ audioString: base64String }),
-        }
-      )
-      const transcriptionResult = (await transcriptionResponse.json())
-        .transcription
+      const transcriptionResult = await transcribe(base64String)
+      if (!transcriptionResult) {
+        throw new Error('Transcription failed')
+      }
       setTranscription(transcriptionResult)
       addMessage({ languages: { main: [transcriptionResult] } })
     } catch (error) {

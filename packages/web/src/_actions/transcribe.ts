@@ -1,8 +1,10 @@
+'use server'
+
 import speech from '@google-cloud/speech'
 
 const client = new speech.SpeechClient()
 
-const transcribeAudio = async (audioString: string) => {
+const transcribe = async (audioString: string) => {
   const config = {
     encoding: 'WEBM_OPUS' as 'WEBM_OPUS',
     sampleRateHertz: 48000,
@@ -31,4 +33,4 @@ const transcribeAudio = async (audioString: string) => {
   }
 }
 
-export default transcribeAudio
+export default transcribe
