@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
 
 import { useAppContext } from '@/_context/AppContext'
-import { useAddMessage } from './useAddMessage'
+import { useMessage } from './useMessage'
 import transcribe from '@/_actions/transcribe'
 
 const blobToBase64 = (blob: Blob): Promise<string> => {
@@ -24,7 +24,7 @@ export const useAudioRecorder = () => {
   const [transcription, setTranscription] = useState<string | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
-  const { addMessage } = useAddMessage()
+  const { addMessage } = useMessage()
 
   const transcribeAudio = async (blob: Blob) => {
     try {
