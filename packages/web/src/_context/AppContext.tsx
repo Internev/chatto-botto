@@ -62,6 +62,7 @@ function appReducer(state: IAppState, action: IAction): IAppState {
       return {
         ...state,
         conversation: action.conversation,
+        initialising: false,
       }
     case 'ADD_MESSAGE':
       const newAddMessageConversation = { ...state.conversation }
@@ -102,16 +103,16 @@ const AppContext = createContext<
   | undefined
 >(undefined)
 
-const getNewClaudeResponse = async (conversation: IConversation) => {
-  console.log('Getting new Claude response...')
-  // const languages = await continueClaudeConversation(conversation)
-  const languages = {
-    en: 'Hello. How was your weekend?',
-    main: 'こんにちは。休みは どうでしたか？',
-    alt: 'Konnichiwa. Yasumi wa dou deshita ka?',
-  }
-  return languages
-}
+// const getNewClaudeResponse = async (conversation: IConversation) => {
+//   console.log('Getting new Claude response...')
+//   // const languages = await continueClaudeConversation(conversation)
+//   const languages = {
+//     en: 'Hello. How was your weekend?',
+//     main: 'こんにちは。休みは どうでしたか？',
+//     alt: 'Konnichiwa. Yasumi wa dou deshita ka?',
+//   }
+//   return languages
+// }
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState)

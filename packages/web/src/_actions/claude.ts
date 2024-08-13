@@ -5,7 +5,11 @@ import Anthropic from '@anthropic-ai/sdk'
 import { ContentBlock, TextBlock } from '@anthropic-ai/sdk/resources/messages'
 
 import { IConversation } from '@/_context/types'
-import { basicLevel1 } from '@/_prompting/prompts'
+import {
+  basicLevel1,
+  generateSystemPrompt,
+  ISystemPromptInput,
+} from '@/_prompting/prompts'
 
 // {
 //   "id": "msg_01XFDUDYJgAACzvnptvVoYEL",
@@ -51,12 +55,12 @@ export const parseClaudeResponse = (response: Anthropic.Messages.Message) => {
     (match) => match[1]
   )
 
-  return {
+  return Promise.resolve({
     main: mainMatches,
     alt: altMatches,
     en: enMatches,
     cor: corMatches,
-  }
+  })
 }
 
 // Models:
@@ -64,23 +68,33 @@ export const parseClaudeResponse = (response: Anthropic.Messages.Message) => {
 // claude-3-opus-20240229
 // claude-3-haiku-20240307
 
-// const initClaude = async () => {
-//   // basicLevel1
-//   const key = await window.electronAPI.getEnv('ANTHROPIC_API_KEY')
-//   console.log('API key:', key)
-//   const anthropic = new Anthropic({
-//     apiKey: key,
-//   })
+export const initClaude = async ({
+  level,
+  language,
+  scenario,
+}: ISystemPromptInput) => {
+  // basicLevel1
 
-//   const response = await anthropic.messages.create({
-//     model: 'claude-3-haiku-20240307',
-//     max_tokens: 1024,
-//     system: basicLevel1,
-//     messages: [{ role: 'user', content: `I'm ready` }],
-//   })
+  const key = process.env.ANTHROPIC_API_KEY
+  const anthropic = new Anthropic({
+    apiKey: key,
+  })
 
-//   return parseClaudeResponse(response)
-// }
+  const systemPrompt = generateSystemPrompt({
+    level: '1',
+    language: 'Japanese',
+    scenario: 'generic',
+  })
+
+  const response = await anthropic.messages.create({
+    model: 'claude-3-haiku-20240307',
+    max_tokens: 1024,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: `I'm ready` }],
+  })
+
+  return parseClaudeResponse(response)
+}
 
 export const parseStateToClaude = async (conversation: IConversation) => {
   const messages = conversation.messages.map((message) => {
