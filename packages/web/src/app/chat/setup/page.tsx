@@ -130,9 +130,9 @@ export default function SetupPage() {
             value={selectedScenario}
             onChange={handleScenarioChange}
           >
-            {Object.entries(scenarios).map(([key, val]) => (
+            {Object.entries(scenarios).map(([key, { user }]) => (
               <option key={key} value={key}>
-                {val}
+                {user}
               </option>
             ))}
           </select>
