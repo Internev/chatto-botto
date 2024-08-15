@@ -1,34 +1,26 @@
 'use server'
 
-import speech from '@google-cloud/speech'
+import OpenAI from 'openai'
 
-const client = new speech.SpeechClient()
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
 
-const transcribe = async (audioString: string) => {
-  const config = {
-    encoding: 'WEBM_OPUS' as 'WEBM_OPUS',
-    sampleRateHertz: 48000,
-    languageCode: 'ja-JP', // TODO: make this configurable
+const transcribe = async (audioBlob: FormData) => {
+  console.log('sending request to openai', audioBlob)
+  const audio = audioBlob.get('audio') as Blob
+  if (!audio) {
+    throw new Error('No audio file found')
   }
-
-  const request = {
-    audio: { content: audioString },
-    config,
-  }
-
-  console.log('sending request to google')
-  const startTime = Date.now()
+  const audioFile = await OpenAI.toFile(audio, 'audio.webm')
   try {
-    const data = await client.recognize(request)
-    if (!data || !data[0] || !data[0].results) {
-      return null
-    }
-    const transcription = data[0].results
-      .map((result) => result?.alternatives?.[0].transcript)
-      .join('\n')
-
-    console.log('time taken:', Date.now() - startTime)
-    return transcription
+    const transcription = await openai.audio.transcriptions.create({
+      file: audioFile,
+      model: 'whisper-1',
+      language: 'ja',
+    })
+    console.log('transcription:', transcription)
+    return transcription.text
   } catch (error) {
     console.error('Error:', error)
     return null

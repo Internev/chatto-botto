@@ -28,13 +28,18 @@ export const useAudioRecorder = () => {
 
   const transcribeAudio = async (blob: Blob) => {
     try {
-      const base64String = await blobToBase64(blob)
-      const transcriptionResult = await transcribe(base64String)
+      // const base64String = await blobToBase64(blob)
+      const formData = new FormData()
+      formData.append('audio', blob, 'audio.webm')
+      const transcriptionResult = await transcribe(formData)
       if (!transcriptionResult) {
         throw new Error('Transcription failed')
       }
       setTranscription(transcriptionResult)
-      addMessage({ languages: { main: [transcriptionResult] } })
+      addMessage({
+        languages: { main: [transcriptionResult] },
+        audioUrls: { main: URL.createObjectURL(blob) },
+      })
     } catch (error) {
       console.error('Transcription error:', error)
       setTranscription(null)
@@ -58,7 +63,7 @@ export const useAudioRecorder = () => {
 
       mediaRecorderRef.current.onstop = async () => {
         console.log('stopping recording')
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
+        const blob = new Blob(chunksRef.current, { type: 'audio/mp3' })
         setAudioBlob(blob)
         await transcribeAudio(blob)
       }
