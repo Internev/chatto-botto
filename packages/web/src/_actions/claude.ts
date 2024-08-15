@@ -5,11 +5,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { ContentBlock, TextBlock } from '@anthropic-ai/sdk/resources/messages'
 
 import { IConversation } from '@/_context/types'
-import {
-  basicLevel1,
-  generateSystemPrompt,
-  ISystemPromptInput,
-} from '@/_prompting/prompts'
+import { generateSystemPrompt, ISystemPromptInput } from '@/_prompting/prompts'
 
 // {
 //   "id": "msg_01XFDUDYJgAACzvnptvVoYEL",
@@ -68,6 +64,8 @@ export const parseClaudeResponse = (response: Anthropic.Messages.Message) => {
 // claude-3-opus-20240229
 // claude-3-haiku-20240307
 
+let systemPrompt: string
+
 export const initClaude = async ({
   level,
   language,
@@ -80,10 +78,10 @@ export const initClaude = async ({
     apiKey: key,
   })
 
-  const systemPrompt = generateSystemPrompt({
+  systemPrompt = generateSystemPrompt({
     level: '1',
     language: 'Japanese',
-    scenario: 'generic',
+    scenario,
   })
 
   const response = await anthropic.messages.create({
@@ -150,7 +148,7 @@ export const continueClaudeConversation = async (
   const response = await anthropic.messages.create({
     model: 'claude-3-haiku-20240307',
     max_tokens: 1024,
-    system: basicLevel1,
+    system: systemPrompt,
     messages: [{ role: 'user', content: `I'm ready` }, ...claudeConversation],
   })
 

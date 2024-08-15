@@ -65,32 +65,9 @@ export const useMessage = () => {
         type: 'SET_INITIALISING',
         initialising: true,
       })
-      // Call API to initialise chat
-      const message1 = await initClaude(systemPrompt)
-      console.log('chat initialised! message1:', message1)
-      const message =
-        '<main>こんにちは、友達!</main> <alt>Konnichiwa, tomodachi!</alt> <en>Hello, friend!</en>\n\nHow are you today? \n<main>今日はどうですか?</main> <alt>Kyō wa dō desu ka?</alt> <en>How are you today?</en>'
 
-      const response: Message = {
-        id: 'msg_01XFDUDYJgAACzvnptvVoYEL',
-        type: 'message',
-        role: 'assistant',
-        content: [
-          {
-            type: 'text',
-            text: message,
-          },
-        ],
-        model: 'claude-3-5-sonnet-20240620',
-        stop_reason: 'end_turn',
-        stop_sequence: null,
-        usage: {
-          input_tokens: 12,
-          output_tokens: 6,
-        },
-      }
-      const parsed = await parseClaudeResponse(response)
-      console.log('Parsed:', parsed)
+      const message = await initClaude(systemPrompt)
+
       const newConversationId = uuid()
       dispatch({
         type: 'SET_CONVERSATION',
@@ -101,7 +78,7 @@ export const useMessage = () => {
               id: uuid(),
               userId: 'botto',
               timestamp: Date.now(),
-              languages: parsed,
+              languages: message,
               originalLanguage: 'ja', // TODO: generalise
               agent: 'bot',
             },
