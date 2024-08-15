@@ -1,29 +1,20 @@
 import React from 'react'
 import { useAppContext } from '@/_context/AppContext'
+import Message from './Message'
 
 const MessageDisplay: React.FC = () => {
   const { state } = useAppContext()
 
   const { messages } = state.conversation
-  console.log('MessageDisplay re-rendered at', new Date().toISOString())
+  if (state.initialising) {
+    return <div>Initialising...</div>
+  }
+  console.log('messages:', messages)
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center">
+    <div className="flex flex-col min-h-screen items-center">
       <div className="p-4 space-y-4 container mx-auto max-w-prose">
-        {messages.map((message, i) => (
-          <div
-            key={message.id + i}
-            className={`p-2 rounded-lg ${
-              message.agent === 'user' ? 'bg-blue-100 ml-auto' : 'bg-gray-100'
-            } max-w-[70%]`}
-          >
-            {message.languages.main?.join(' ')}
-            {message.audioUrls?.main && (
-              <audio controls autoPlay>
-                <source src={message.audioUrls.main} type="audio/mpeg" />
-                Your browser does not support the audio element.
-              </audio>
-            )}
-          </div>
+        {messages.map((message) => (
+          <Message key={message.id} message={message} />
         ))}
       </div>
     </div>
