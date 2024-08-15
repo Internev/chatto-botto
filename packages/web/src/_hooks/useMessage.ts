@@ -110,6 +110,7 @@ export const useMessage = () => {
         console.log('🤖 Bot message detected. Generating audio...', lastMessage)
         const activeText = lastMessage.languages?.['main']?.join(' ')
         if (!activeText) {
+          console.log('🚨 No main language found in last message', lastMessage)
           throw new Error('No main language found in last message')
         }
         const speechBase64 = await speak(activeText)
