@@ -52,12 +52,8 @@ export const useMessage = () => {
     }
   }
 
-  const addMessage = useCallback(createMessageHandler('ADD_MESSAGE'), [
-    dispatch,
-  ])
-  const updateMessage = useCallback(createMessageHandler('UPDATE_MESSAGE'), [
-    dispatch,
-  ])
+  const addMessage = createMessageHandler('ADD_MESSAGE')
+  const updateMessage = createMessageHandler('UPDATE_MESSAGE')
 
   const initialiseChat = async (systemPrompt: ISystemPromptInput) => {
     if (!state.initialising) {
@@ -125,7 +121,7 @@ export const useMessage = () => {
       }
     }
     continueConversation()
-  }, [state.conversation])
+  }, [state.conversation, addMessage, updateMessage])
 
   return { addMessage, updateMessage, initialiseChat }
 }

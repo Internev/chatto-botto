@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
 
-import { useAppContext } from '@/_context/AppContext'
 import { useMessage } from './useMessage'
 import transcribe from '@/_actions/transcribe'
 
@@ -26,29 +25,29 @@ export const useAudioRecorder = () => {
   const chunksRef = useRef<Blob[]>([])
   const { addMessage } = useMessage()
 
-  const transcribeAudio = async (blob: Blob) => {
-    try {
-      // const base64String = await blobToBase64(blob)
-      const formData = new FormData()
-      formData.append('audio', blob, 'audio.webm')
-      const transcriptionResult = await transcribe(formData)
-      if (!transcriptionResult) {
-        throw new Error('Transcription failed')
-      }
-      setTranscription(transcriptionResult)
-      addMessage({
-        languages: { main: [transcriptionResult] },
-        audioUrls: { main: URL.createObjectURL(blob) },
-      })
-    } catch (error) {
-      console.error('Transcription error:', error)
-      setTranscription(null)
-    }
-  }
-
   const startRecording = useCallback(async () => {
     setIsRecording(true)
     setTranscription(null)
+
+    const transcribeAudio = async (blob: Blob) => {
+      try {
+        const formData = new FormData()
+        formData.append('audio', blob, 'audio.webm')
+        const transcriptionResult = await transcribe(formData)
+        if (!transcriptionResult) {
+          throw new Error('Transcription failed')
+        }
+        setTranscription(transcriptionResult)
+        addMessage({
+          languages: { main: [transcriptionResult] },
+          audioUrls: { main: URL.createObjectURL(blob) },
+        })
+      } catch (error) {
+        console.error('Transcription error:', error)
+        setTranscription(null)
+      }
+    }
+
     try {
       console.log('starting recording')
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })

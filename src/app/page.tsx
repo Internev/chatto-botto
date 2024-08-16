@@ -17,7 +17,7 @@ export default async function Home() {
           🤖 Chatto-Botto 🤖
         </h1>
         <p className="text-xl mt-4">
-          Let's have a{' '}
+          {`Let's have a `}
           <Link className="underline-magical" href="/chat/setup">
             conversation!
           </Link>
