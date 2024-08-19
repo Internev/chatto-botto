@@ -18,13 +18,16 @@ const streamToBuffer = (stream: any): Promise<Buffer> => {
   })
 }
 
-const pollyClient = new PollyClient({
-  region: 'ap-southeast-2',
-  credentials: {
-    accessKeyId: awsKey,
-    secretAccessKey: awsSecret,
-  },
-})
+const pollyClient =
+  process.env.NODE_ENV === 'development'
+    ? new PollyClient({
+        region: 'ap-southeast-2',
+        credentials: {
+          accessKeyId: awsKey,
+          secretAccessKey: awsSecret,
+        },
+      })
+    : new PollyClient({ region: 'ap-southeast-2' })
 
 const speak = async (text: string) => {
   const tempParams: SynthesizeSpeechCommandInput = {
