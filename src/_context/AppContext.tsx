@@ -13,32 +13,32 @@ import { IAppState, IAction, IConversation } from './types'
 const exampleConversation: IConversation = {
   id: '1',
   messages: [
-    {
-      id: '1',
-      userId: 'botto',
-      timestamp: Date.now(),
-      languages: {
-        en: [`Hello. How was your weekend?`],
-        main: ['こんにちは。休みは どうでしたか？'],
-        alt: ['Konnichiwa. Yasumi wa dou deshita ka?'],
-      },
-      audioUrls: {},
-      originalLanguage: 'ja',
-      agent: 'bot',
-    },
-    {
-      id: '2',
-      userId: 'user-1',
-      timestamp: Date.now(),
-      languages: {
-        en: [`On the weekend, I ate dinner with a friend.`],
-        main: ['しゅうまつは ともだちと ばんごはんを たべました'],
-        alt: ['Shuumatsu wa tomodachi to bangohan wo tabemashita.'],
-      },
-      audioUrls: {},
-      originalLanguage: 'ja',
-      agent: 'user',
-    },
+    // {
+    //   id: '1',
+    //   userId: 'botto',
+    //   timestamp: Date.now(),
+    //   languages: {
+    //     en: [`Hello. How was your weekend?`],
+    //     main: ['こんにちは。休みは どうでしたか？'],
+    //     alt: ['Konnichiwa. Yasumi wa dou deshita ka?'],
+    //   },
+    //   audioUrls: {},
+    //   originalLanguage: 'ja',
+    //   agent: 'bot',
+    // },
+    // {
+    //   id: '2',
+    //   userId: 'user-1',
+    //   timestamp: Date.now(),
+    //   languages: {
+    //     en: [`On the weekend, I ate dinner with a friend.`],
+    //     main: ['しゅうまつは ともだちと ばんごはんを たべました'],
+    //     alt: ['Shuumatsu wa tomodachi to bangohan wo tabemashita.'],
+    //   },
+    //   audioUrls: {},
+    //   originalLanguage: 'ja',
+    //   agent: 'user',
+    // },
   ],
   createdAt: Date.now(),
   updatedAt: Date.now(),
