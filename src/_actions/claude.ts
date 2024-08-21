@@ -152,5 +152,6 @@ export const continueClaudeConversation = async (
     messages: [{ role: 'user', content: `I'm ready` }, ...claudeConversation],
   })
 
+  console.log('Response usage:', response.usage)
   return parseClaudeResponse(response)
 }
