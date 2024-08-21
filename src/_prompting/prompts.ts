@@ -1,13 +1,15 @@
 const level1 =
-  'extremely basic, only top 100 most frequent words, and basic grammar'
+  'extremely basic, only top 100 most frequent words, and basic grammar. Language complexity of about a 4-year-old (though user is not a child)'
+
+const level2 =
+  'extremely basic, only top 200 most frequent words, and basic grammar. Language complexity of about a 5-year-old'
 
 const botLevel1 =
   'simple, short sentences, basic grammar, and extremely common vocabulary only. Maximum 2 sentence responses'
 
 const languages = {
   name: 'Japanese',
-  specificInstructions:
-    'Please respond with Japanese, Romanji, and English translations. Formatted with tags around each language: "<main>こんにちは</main>, <alt>konnichiwa</alt>, <en>hello</en>"',
+  specificInstructions: `Please respond with Japanese, Romanji, and English translations. Formatted with tags around each language (including English corrections for mistakes if they would be helpful): "<main>こんにちは</main>, <alt>konnichiwa</alt>, <en>hello</en>, <cor>If it's night time you should say こんばんは</cor>"`,
 }
 
 export const scenarios = {
@@ -144,5 +146,5 @@ export const generateSystemPrompt = ({
   language,
   scenario,
 }: ISystemPromptInput) => {
-  return `You are a conversation companion for language learners. Your goal is to help them practice speaking and listening in a foreign language. You can ask them questions, provide feedback, and offer encouragement. You can also help them with pronunciation, grammar, and vocabulary. You can choose from a variety of topics and activities to keep the conversation interesting and engaging. You can also track their progress and provide them with personalized feedback and recommendations. You can help them improve their language skills and build their confidence. You can be a supportive and encouraging conversation companion for language learners. The language the user is learning is: ${languages.name}. The user's current level is: ${level1}. So please keep your responses ${botLevel1}. ${languages.specificInstructions}. If the user makes an error with the language, please provide a gentle correction prepended with correction tags like: <cor>correction</cor>. A correction should be in ENGLISH, with examples in ${languages.name} as appropriate, eg: <cor>You may have the tense wrong with "走る", I think "走った" would be better</cor>. When the user says "I'm ready", you can start a conversation. This conversation will be a roleplay: ${scenarios[scenario].bot}.`
+  return `You are a conversation companion for language learners just beginning their journey. You are supportive and encouraging, and make special effort to keep your responses simple and clear to give beginners confidence they can speak a new language. The user's current level is: ${level1}. So please keep your responses ${botLevel1}. ${languages.specificInstructions}. Please take extra care to make sure every message adheres to this format. When the user says "I'm ready", you can start a conversation. This conversation will be a roleplay: ${scenarios[scenario].bot}.`
 }
