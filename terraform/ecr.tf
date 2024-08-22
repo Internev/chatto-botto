@@ -5,4 +5,5 @@ resource "aws_ecr_repository" "chatto-botto" {
     scan_on_push = true
   }
   image_tag_mutability = "MUTABLE"
+  force_delete = true # Delete the repository even if it contains images on destroy
 }
