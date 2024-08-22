@@ -1,5 +1,6 @@
 'use server'
 
+import { ILanguageCode } from '@/_context/types'
 import {
   PollyClient,
   SynthesizeSpeechCommand,
@@ -29,7 +30,8 @@ const pollyClient =
       })
     : new PollyClient({ region: 'ap-southeast-2' })
 
-const speak = async (text: string) => {
+const speak = async (text: string, language?: ILanguageCode) => {
+  // TODO: Add language support voice-wise
   const tempParams: SynthesizeSpeechCommandInput = {
     Engine: 'neural',
     OutputFormat: 'mp3',

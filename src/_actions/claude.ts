@@ -79,8 +79,8 @@ export const initClaude = async ({
   })
 
   systemPrompt = generateSystemPrompt({
-    level: '1',
-    language: 'Japanese',
+    level,
+    language,
     scenario,
   })
 

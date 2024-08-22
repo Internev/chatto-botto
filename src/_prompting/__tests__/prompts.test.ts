@@ -8,8 +8,8 @@ import {
 describe('prompts helpers', () => {
   describe('generateSystemPrompt', () => {
     const mockInput: ISystemPromptInput = {
-      level: 'basic',
-      language: 'Japanese',
+      level: '1',
+      language: 'ja',
       scenario: 'generic',
     }
 
@@ -38,7 +38,7 @@ describe('prompts helpers', () => {
     it('should generate a system prompt for a different level', () => {
       const input: ISystemPromptInput = {
         ...mockInput,
-        level: 'advanced',
+        level: '4',
       }
 
       const systemPrompt = generateSystemPrompt(input)
@@ -49,7 +49,7 @@ describe('prompts helpers', () => {
     it('should generate a system prompt for a different language', () => {
       const input: ISystemPromptInput = {
         ...mockInput,
-        language: 'Spanish',
+        language: 'es',
       }
 
       const systemPrompt = generateSystemPrompt(input)

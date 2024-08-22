@@ -2,20 +2,7 @@ import { useState, useRef, useCallback } from 'react'
 
 import { useMessage } from './useMessage'
 import transcribe from '@/_actions/transcribe'
-
-const blobToBase64 = (blob: Blob): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(blob)
-    reader.onload = () => {
-      const base64String = (reader.result as string).split(',')[1]
-      resolve(base64String)
-    }
-    reader.onerror = () => {
-      reject('Error converting blob to base64')
-    }
-  })
-}
+import { useAppContext } from '@/_context/AppContext'
 
 export const useAudioRecorder = () => {
   const [isRecording, setIsRecording] = useState(false)
@@ -23,6 +10,8 @@ export const useAudioRecorder = () => {
   const [transcription, setTranscription] = useState<string | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
+
+  const { state } = useAppContext()
   const { addMessage } = useMessage()
 
   const startRecording = useCallback(async () => {
@@ -33,7 +22,10 @@ export const useAudioRecorder = () => {
       try {
         const formData = new FormData()
         formData.append('audio', blob, 'audio.webm')
-        const transcriptionResult = await transcribe(formData)
+        const transcriptionResult = await transcribe(
+          formData,
+          state.language || ''
+        )
         if (!transcriptionResult) {
           throw new Error('Transcription failed')
         }

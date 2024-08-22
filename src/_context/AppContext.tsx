@@ -47,6 +47,7 @@ const exampleConversation: IConversation = {
 const initialState: IAppState = {
   conversation: exampleConversation,
   initialising: false,
+  language: 'ja',
 }
 
 function appReducer(state: IAppState, action: IAction): IAppState {
@@ -57,6 +58,11 @@ function appReducer(state: IAppState, action: IAction): IAppState {
       return {
         ...state,
         initialising: action.initialising,
+      }
+    case 'SET_LANGUAGE':
+      return {
+        ...state,
+        language: action.language,
       }
     case 'SET_CONVERSATION':
       return {

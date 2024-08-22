@@ -6,7 +6,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-const transcribe = async (audioBlob: FormData) => {
+const transcribe = async (audioBlob: FormData, language: string) => {
   console.log('sending request to openai', audioBlob)
   const audio = audioBlob.get('audio') as Blob
   if (!audio) {
@@ -17,7 +17,7 @@ const transcribe = async (audioBlob: FormData) => {
     const transcription = await openai.audio.transcriptions.create({
       file: audioFile,
       model: 'whisper-1',
-      language: 'ja',
+      language,
     })
     console.log('transcription:', transcription)
     return transcription.text

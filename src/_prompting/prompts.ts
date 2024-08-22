@@ -1,15 +1,67 @@
-const level1 =
-  'extremely basic, only top 100 most frequent words, and basic grammar. Language complexity of about a 4-year-old (though user is not a child)'
+import { ILanguageCode } from '@/_context/types'
 
-const level2 =
-  'extremely basic, only top 200 most frequent words, and basic grammar. Language complexity of about a 5-year-old'
+interface ILevel {
+  [key: string]: string
+}
 
-const botLevel1 =
-  'simple, short sentences, basic grammar, and extremely common vocabulary only. Maximum 2 sentence responses'
+const levels: ILevel = {
+  1: 'extremely basic, only top 100 most frequent words, and basic grammar. Language complexity of about a 4-year-old',
+  2: 'extremely basic, only top 200 most frequent words, and basic grammar. Language complexity of about a 5-year-old',
+  3: 'basic, only top 500 most frequent words, and basic grammar. Language complexity of about a 6-year-old',
+  4: 'basic, only top 1000 most frequent words, and basic grammar. Language complexity of about a 7-year-old',
+}
 
-const languages = {
-  name: 'Japanese',
-  specificInstructions: `Please respond with Japanese, Romanji, and English translations. Formatted with tags around each language (including English corrections for mistakes if they would be helpful): "<main>こんにちは</main>, <alt>konnichiwa</alt>, <en>hello</en>, <cor>If it's night time you should say こんばんは</cor>"`,
+const botLevels: ILevel = {
+  1: 'simple, very short sentences, basic grammar, and extremely common vocabulary only. Maximum 2 sentence responses',
+  2: 'simple, short sentences, basic grammar, and common vocabulary only. Maximum 2 sentence responses',
+  3: 'simple sentences, basic grammar, and common vocabulary only. Maximum 3 sentence responses',
+  4: 'simple sentences, basic grammar, and common vocabulary only. Maximum 3 sentence responses',
+}
+
+type ILanguage = Partial<{
+  [K in ILanguageCode]: {
+    name: string
+    specificInstructions: string
+  }
+}>
+
+const languages: ILanguage = {
+  ja: {
+    name: 'Japanese',
+    specificInstructions: `Please respond with Japanese, Romanji, and English translations. Formatted with tags around each language (including English corrections for mistakes if they would be helpful): "<main>こんにちは</main> <alt>konnichiwa</alt> <en>hello</en>, <cor>If it's night time you should say こんばんは</cor>"`,
+  },
+  es: {
+    name: 'Spanish',
+    specificInstructions: `Please respond with Spanish, English translations. Formatted with tags around each language (including English corrections for mistakes if they would be helpful): "<main>Hola</main> <en>hello</en> <cor>It's not "Hola" it's "Buenos días"</cor>"`,
+  },
+  fr: {
+    name: 'French',
+    specificInstructions: `Please respond with French, English translations. Formatted with tags around each language (including English corrections for mistakes if they would be helpful): "<main>Bonjour</main> <en>hello</en> <cor>It's not "Bonjour" it's "Salut"</cor>"`,
+  },
+  de: {
+    name: 'German',
+    specificInstructions: `Please respond with German, English translations. Formatted with tags around each language (including English corrections for mistakes if they would be helpful): "<main>Hallo</main> <en>hello</en> <cor>It's not "Hallo" it's "Guten Tag"</cor>"`,
+  },
+  it: {
+    name: 'Italian',
+    specificInstructions: `Please respond with Italian, English translations. Formatted with tags around each language (including English corrections for mistakes if they would be helpful): "<main>Ciao</main> <en>hello</en> <cor>It's not "Ciao" it's "Buongiorno"</cor>"`,
+  },
+  pt: {
+    name: 'Portuguese',
+    specificInstructions: `Please respond with Portuguese, English translations. Formatted with tags around each language (including English corrections for mistakes if they would be helpful): "<main>Oi</main> <en>hello</en> <cor>It's not "Oi" it's "Bom dia"</cor>"`,
+  },
+  hu: {
+    name: 'Hungarian',
+    specificInstructions: `Please respond with Hungarian, English translations. Formatted with tags around each language (including English corrections for mistakes if they would be helpful): "<main>Szia</main> <en>hello</en> <cor>It's not "Szia" it's "Jó napot"</cor>"`,
+  },
+  zh: {
+    name: 'Chinese',
+    specificInstructions: `Please respond with Chinese, English translations. Formatted with tags around each language (including English corrections for mistakes if they would be helpful): "<main>你好</main> <en>hello</en> <cor>It's not "你好" it's "早上好"</cor>"`,
+  },
+  ko: {
+    name: 'Korean',
+    specificInstructions: `Please respond with Korean, English translations. Formatted with tags around each language (including English corrections for mistakes if they would be helpful): "<main>안녕하세요</main> <en>hello</en> <cor>It's not "안녕하세요" it's "안녕"</cor>"`,
+  },
 }
 
 export const scenarios = {
@@ -131,13 +183,11 @@ export const scenarios = {
   },
 }
 
-// const basicLevel1 = `You are a conversation companion for language learners. Your goal is to help them practice speaking and listening in a foreign language. You can ask them questions, provide feedback, and offer encouragement. You can also help them with pronunciation, grammar, and vocabulary. You can choose from a variety of topics and activities to keep the conversation interesting and engaging. You can also track their progress and provide them with personalized feedback and recommendations. You can help them improve their language skills and build their confidence. You can be a supportive and encouraging conversation companion for language learners. The language the user is learning is: ${language.name}. The user's current level is: ${level}. Please keep your responses simple and clear. ${language.specificInstructions}. If the user makes an error with the language, please provide a gentle correction prepended with correction tags like: <cor>correction</cor>. A correction should be in English, with examples in ${language.name} as appropriate. When the user says "I'm ready", you can start the conversation - ${scenarios.generic}.`
-
 export type Scenario = keyof typeof scenarios
 
 export interface ISystemPromptInput {
   level: string
-  language: string
+  language: string // todo: make this a type
   scenario: Scenario
 }
 
@@ -146,5 +196,5 @@ export const generateSystemPrompt = ({
   language,
   scenario,
 }: ISystemPromptInput) => {
-  return `You are a conversation companion for language learners just beginning their journey. You are supportive and encouraging, and make special effort to keep your responses simple and clear to give beginners confidence they can speak a new language. The user's current level is: ${level1}. So please keep your responses ${botLevel1}. ${languages.specificInstructions}. Please take extra care to make sure every message adheres to this format. When the user says "I'm ready", you can start a conversation. This conversation will be a roleplay: ${scenarios[scenario].bot}.`
+  return `You are a conversation companion for language learners just beginning their journey. You are supportive and encouraging, and make special effort to keep your responses simple and clear to give beginners confidence they can speak a new language. The user's current level is: ${levels[level]}. So please keep your responses ${botLevels[level]}. ${languages[language].specificInstructions}. Please take extra care to make sure every message adheres to this format. When the user says "I'm ready", you can start a conversation. This conversation will be a roleplay: ${scenarios[scenario].bot}.`
 }

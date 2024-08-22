@@ -1,6 +1,8 @@
+import { ILanguageCode } from '@/_context/types'
+
 export interface ILanguage {
-  main: string
-  alt?: string
+  main: ILanguageCode
+  alt?: ILanguageCode
 }
 
 export interface ILanguageSetup {
