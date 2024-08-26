@@ -5,6 +5,7 @@ import {
   PollyClient,
   SynthesizeSpeechCommand,
   SynthesizeSpeechCommandInput,
+  VoiceId,
 } from '@aws-sdk/client-polly'
 
 const awsKey = process.env['AWS_ACCESS_KEY_ID'] || ''
@@ -30,14 +31,13 @@ const pollyClient =
       })
     : new PollyClient({ region: 'ap-southeast-2' })
 
-const speak = async (text: string, language?: ILanguageCode) => {
-  // TODO: Add language support voice-wise
+const speak = async (text: string, voiceId: VoiceId) => {
   const tempParams: SynthesizeSpeechCommandInput = {
     Engine: 'neural',
     OutputFormat: 'mp3',
     Text: text,
     TextType: 'text',
-    VoiceId: 'Takumi',
+    VoiceId: voiceId,
     SampleRate: '24000',
   }
 

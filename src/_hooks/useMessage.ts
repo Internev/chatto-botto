@@ -75,7 +75,7 @@ export const useMessage = () => {
               userId: 'botto',
               timestamp: Date.now(),
               languages: message,
-              originalLanguage: 'ja', // TODO: generalise
+              originalLanguage: state.language || 'ja', // TODO: generalise
               agent: 'bot',
             },
           ],
@@ -89,7 +89,7 @@ export const useMessage = () => {
   // Continue conversation
   useEffect(() => {
     const continueConversation = async () => {
-      const conversation = state.conversation
+      const { conversation, voiceId } = state
       const lastMessage =
         conversation &&
         conversation.messages[conversation.messages.length - 1 || 0]
@@ -109,7 +109,10 @@ export const useMessage = () => {
           console.log('🚨 No main language found in last message', lastMessage)
           throw new Error('No main language found in last message')
         }
-        const speechBase64 = await speak(activeText)
+        if (!voiceId) {
+          return
+        }
+        const speechBase64 = await speak(activeText, voiceId)
         const audioUrl = 'data:audio/mp3;base64,' + speechBase64
         updateMessage({
           ...lastMessage,

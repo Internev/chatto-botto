@@ -10,7 +10,7 @@ export type ILanguageCode =
   | 'ko'
   | 'zh'
   | 'ro'
-  | 'hu'
+  | 'se'
   | 'main'
   | 'alt'
   | 'cor'
@@ -40,11 +40,13 @@ export interface IAppState {
   conversation: IConversation
   initialising: boolean
   language?: ILanguageCode
+  voiceId?: string
 }
 
 export type IAction =
   | { type: 'SET_INITIALISING'; initialising: boolean }
   | { type: 'SET_LANGUAGE'; language: ILanguageCode }
+  | { type: 'SET_VOICE'; voiceId: string }
   | { type: 'SET_CONVERSATION'; conversation: IConversation }
   | { type: 'ADD_MESSAGE'; message: IMessage }
   | { type: 'UPDATE_MESSAGE'; message: IMessage }
