@@ -129,9 +129,6 @@ export const parseStateToClaude = async (conversation: IConversation) => {
       content,
     }
   })
-  console.log('Parsed messages typeof:', typeof messages)
-  console.log('Parsed messages Array:', Array.isArray(messages))
-  console.log('Parsed messages length:', messages.length)
   return Promise.resolve(messages)
 }
 
