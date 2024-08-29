@@ -3,13 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npm run start-dynamodb && npm run init-db && next dev",
     "build": "next build",
     "start": "next start",
+    "init-db": "cross-env NODE_ENV=development tsx scripts/initDb.ts",
+    "start-dynamodb": "docker run -d -p 8000:8000 amazon/dynamodb-local",
+    "stop-dynamodb": "tsx scripts/stopDb.ts",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "local-deploy": "sh ./scripts/push_docker_image.sh"
+    "test:watch": "jest --watch"
   },
   "author": {
     "name": "Internev",
@@ -17,14 +19,15 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.25.0",
+    "@aws-sdk/client-dynamodb": "^3.637.0",
     "@aws-sdk/client-polly": "^3.624.0",
+    "@aws-sdk/lib-dynamodb": "^3.637.0",
     "dotenv": "^16.4.5",
     "next": "14.2.5",
     "openai": "^4.55.7",
     "react": "^18",
     "react-dom": "^18",
-    "uuid": "^10.0.0",
-    "uuidv4": "^6.2.13"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.8",
@@ -33,12 +36,15 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/uuid": "^10.0.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.19.0",
     "typescript": "^5"
   }
 }
