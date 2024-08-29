@@ -18,7 +18,7 @@ export type ILanguageCode =
 export interface IMessage {
   id: string
   userId: string
-  timestamp: number
+  timestamp: string
   languages: {
     [key in ILanguageCode]?: string[]
   }
@@ -32,8 +32,8 @@ export interface IMessage {
 export interface IConversation {
   id: string
   messages: IMessage[]
-  createdAt: number
-  updatedAt: number
+  createdAt: string
+  updatedAt: string
 }
 
 export interface IAppState {

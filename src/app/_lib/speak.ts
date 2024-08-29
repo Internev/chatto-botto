@@ -42,10 +42,11 @@ const speak = async (text: string, voiceId: VoiceId) => {
   }
 
   try {
-    const spokenAudio = await pollyClient.send(
+    const { AudioStream } = await pollyClient.send(
       new SynthesizeSpeechCommand(tempParams)
     )
-    const audioBuffer = await streamToBuffer(spokenAudio.AudioStream)
+    // return AudioStream
+    const audioBuffer = await streamToBuffer(AudioStream)
     return audioBuffer.toString('base64')
   } catch (err) {
     console.log('Error putting object', err)

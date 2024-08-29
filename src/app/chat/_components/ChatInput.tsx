@@ -1,4 +1,4 @@
-import { useAudioRecorder } from '@/_hooks/useAudioRecorder'
+import { useAudioRecorder } from '@/app/_hooks/useAudioRecorder'
 
 const MicIcon: React.FC<{ isRecording: boolean }> = ({ isRecording }) => (
   <svg
@@ -15,13 +15,8 @@ const MicIcon: React.FC<{ isRecording: boolean }> = ({ isRecording }) => (
 )
 
 const ChatInput: React.FC = () => {
-  const {
-    isRecording,
-    startRecording,
-    stopRecording,
-    audioBlob,
-    transcription,
-  } = useAudioRecorder()
+  const { isRecording, startRecording, stopRecording, isProcessing } =
+    useAudioRecorder()
 
   return (
     <div className="h-full flex items-center justify-center container mx-auto">
@@ -33,7 +28,11 @@ const ChatInput: React.FC = () => {
         }`}
         onClick={isRecording ? stopRecording : startRecording}
       >
-        <MicIcon isRecording={isRecording} />
+        {isProcessing ? (
+          <div className="animate-spin h-5 w-5 border-b-2 border-gray-900 rounded-full"></div>
+        ) : (
+          <MicIcon isRecording={isRecording} />
+        )}
       </button>
     </div>
   )

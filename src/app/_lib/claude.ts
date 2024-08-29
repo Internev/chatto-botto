@@ -5,7 +5,10 @@ import Anthropic from '@anthropic-ai/sdk'
 import { ContentBlock, TextBlock } from '@anthropic-ai/sdk/resources/messages'
 
 import { IConversation } from '@/_context/types'
-import { generateSystemPrompt, ISystemPromptInput } from '@/_prompting/prompts'
+import {
+  generateSystemPrompt,
+  ISystemPromptInput,
+} from '@/app/_lib/_prompting/prompts'
 
 // {
 //   "id": "msg_01XFDUDYJgAACzvnptvVoYEL",
@@ -66,22 +69,10 @@ export const parseClaudeResponse = (response: Anthropic.Messages.Message) => {
 
 let systemPrompt: string
 
-export const initClaude = async ({
-  level,
-  language,
-  scenario,
-}: ISystemPromptInput) => {
-  // basicLevel1
-
+export const initClaude = async (systemPrompt: string) => {
   const key = process.env.ANTHROPIC_API_KEY
   const anthropic = new Anthropic({
     apiKey: key,
-  })
-
-  systemPrompt = generateSystemPrompt({
-    level,
-    language,
-    scenario,
   })
 
   const response = await anthropic.messages.create({

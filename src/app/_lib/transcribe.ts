@@ -6,9 +6,10 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-const transcribe = async (audioBlob: FormData, language: string) => {
-  console.log('sending request to openai', audioBlob)
-  const audio = audioBlob.get('audio') as Blob
+const transcribe = async (formData: FormData) => {
+  console.log('sending request to openai', formData)
+  const audio = formData.get('audio') as Blob
+  const language = formData.get('language') as string
   if (!audio) {
     throw new Error('No audio file found')
   }

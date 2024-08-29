@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react'
 
-import { Scenario, scenarios } from '@/_prompting/prompts'
+import { Scenario, scenarios } from '@/app/_lib/_prompting/prompts'
 import { ILanguage, languages } from '@/_config/languages'
-import { useMessage } from '@/_hooks/useMessage'
 import { useRouter } from 'next/navigation'
 import { useAppContext } from '@/_context/AppContext'
 import { ILanguageCode } from '@/_context/types'
+import { useChat } from '@/app/_hooks/useChat'
 
 interface OptionProps {
   value: string
@@ -28,9 +28,9 @@ const ChatbotSetup: React.FC = () => {
     Object.keys(scenarios)[0] as Scenario
   )
 
-  const { dispatch } = useAppContext()
+  const { state, dispatch } = useAppContext()
   const router = useRouter()
-  const { initialiseChat } = useMessage()
+  const { initialiseChat } = useChat()
 
   const Option: React.FC<OptionProps> = ({ selected, onClick, children }) => (
     <div
@@ -65,9 +65,12 @@ const ChatbotSetup: React.FC = () => {
 
   const handleStartChatting = () => {
     initialiseChat({
-      level: level,
-      scenario: selectedScenario,
-      language: languages[language].main as ILanguageCode,
+      systemPrompt: {
+        level: level,
+        scenario: selectedScenario,
+        language: languages[language].main as ILanguageCode,
+      },
+      voiceId: state.voiceId,
     })
     router.push('/chat')
   }

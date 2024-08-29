@@ -7,9 +7,9 @@ import {
   continueClaudeConversation,
   initClaude,
   parseClaudeResponse,
-} from '@/_actions/claude'
-import speak from '@/_actions/speak'
-import { ISystemPromptInput } from '@/_prompting/prompts'
+} from '@/app/_lib/claude'
+import speak from '@/app/_lib/speak'
+import { ISystemPromptInput } from '@/app/_lib/_prompting/prompts'
 import { Message } from '@anthropic-ai/sdk/resources/messages.mjs'
 
 export const useMessage = () => {

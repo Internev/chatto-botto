@@ -1,6 +1,6 @@
 'use client'
 
-import { validatePassword } from '@/_actions/password'
+import { validatePassword } from '@/app/_lib/password'
 import Link from 'next/link'
 import { useState } from 'react'
 

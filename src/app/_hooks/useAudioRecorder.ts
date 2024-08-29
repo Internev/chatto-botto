@@ -1,44 +1,29 @@
-import { useState, useRef, useCallback } from 'react'
+'use client'
 
-import { useMessage } from './useMessage'
-import transcribe from '@/_actions/transcribe'
-import { useAppContext } from '@/_context/AppContext'
+import { useCallback, useRef, useState } from 'react'
+import { useChat } from './useChat'
 
-export const useAudioRecorder = () => {
+interface ChatProcessResult {
+  transcription: string
+  botResponse: string
+  audioUrl: string
+}
+
+export function useAudioRecorder() {
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [result, setResult] = useState<ChatProcessResult | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
   const [isRecording, setIsRecording] = useState(false)
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
   const [transcription, setTranscription] = useState<string | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
 
-  const { state } = useAppContext()
-  const { addMessage } = useMessage()
+  const { processAudio } = useChat()
 
   const startRecording = useCallback(async () => {
     setIsRecording(true)
-    setTranscription(null)
-
-    const transcribeAudio = async (blob: Blob) => {
-      try {
-        const formData = new FormData()
-        formData.append('audio', blob, 'audio.webm')
-        const transcriptionResult = await transcribe(
-          formData,
-          state.language || ''
-        )
-        if (!transcriptionResult) {
-          throw new Error('Transcription failed')
-        }
-        setTranscription(transcriptionResult)
-        addMessage({
-          languages: { main: [transcriptionResult] },
-          audioUrls: { main: URL.createObjectURL(blob) },
-        })
-      } catch (error) {
-        console.error('Transcription error:', error)
-        setTranscription(null)
-      }
-    }
 
     try {
       console.log('starting recording')
@@ -56,7 +41,8 @@ export const useAudioRecorder = () => {
         console.log('stopping recording')
         const blob = new Blob(chunksRef.current, { type: 'audio/mp3' })
         setAudioBlob(blob)
-        await transcribeAudio(blob)
+
+        await processAudio(blob)
       }
 
       mediaRecorderRef.current.start()
@@ -73,11 +59,41 @@ export const useAudioRecorder = () => {
     }
   }, [isRecording])
 
+  // const processAudio = async (audioBlob: Blob) => {
+  //   setIsProcessing(true)
+  //   setError(null)
+
+  //   const formData = new FormData()
+  //   formData.append('audio', audioBlob, 'audio.mp3')
+  //   formData.append('language', 'ja')
+
+  //   try {
+  //     const response = await fetch('/api/chat/message', {
+  //       method: 'POST',
+  //       body: formData,
+  //     })
+
+  //     if (!response.ok) {
+  //       throw new Error('Failed to process audio')
+  //     }
+
+  //     const data = await response.json()
+  //     console.log('processed audio:', data)
+  //     setResult(data)
+  //   } catch (err) {
+  //     setError(err instanceof Error ? err.message : 'An unknown error occurred')
+  //   } finally {
+  //     setIsProcessing(false)
+  //   }
+  // }
+
   return {
+    isProcessing,
+    result,
+    error,
     isRecording,
     startRecording,
     stopRecording,
-    audioBlob,
     transcription,
   }
 }
