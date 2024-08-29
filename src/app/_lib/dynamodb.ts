@@ -10,9 +10,10 @@ import {
   GetCommand,
   PutCommand,
   QueryCommand,
+  QueryCommandInput,
 } from '@aws-sdk/lib-dynamodb'
 import { v4 as uuidv4 } from 'uuid'
-import { PK, SK } from './types/types'
+import { GSI, PK, SK } from './types/types'
 import { IMessage } from '@/_context/types'
 
 const client = new DynamoDBClient({
@@ -36,10 +37,28 @@ export const createConversationsTable = async (): Promise<
     AttributeDefinitions: [
       { AttributeName: 'PK', AttributeType: 'S' },
       { AttributeName: 'SK', AttributeType: 'S' },
+      { AttributeName: 'GSI1PK', AttributeType: 'S' },
+      { AttributeName: 'GSI1SK', AttributeType: 'S' },
     ],
     KeySchema: [
       { AttributeName: 'PK', KeyType: 'HASH' },
       { AttributeName: 'SK', KeyType: 'RANGE' },
+    ],
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'GSI1',
+        KeySchema: [
+          { AttributeName: 'GSI1PK', KeyType: 'HASH' },
+          { AttributeName: 'GSI1SK', KeyType: 'RANGE' },
+        ],
+        Projection: {
+          ProjectionType: 'ALL',
+        },
+        ProvisionedThroughput: {
+          ReadCapacityUnits: 1,
+          WriteCapacityUnits: 1,
+        },
+      },
     ],
     ProvisionedThroughput: {
       ReadCapacityUnits: 1,
@@ -138,6 +157,8 @@ export const initializeConversation = async (
   const item = {
     PK: PK.user(userId),
     SK: SK.conversation(timestamp, conversationId),
+    GSI1PK: GSI.conversation1PK(userId),
+    GSI1SK: GSI.conversation1SK(conversationId),
     userId,
     conversationId,
     createdAt: timestamp,
@@ -171,6 +192,27 @@ export const appendMessageToConversation = async (
   })
   await dynamoDb.send(command)
   return message.id
+}
+
+export const getConversation = async (
+  userId: string,
+  conversationId: string
+) => {
+  const command = new QueryCommand({
+    TableName: tableName,
+    IndexName: 'GSI1',
+    KeyConditionExpression: 'GSI1PK = :pk AND begins_with(GSI1SK, :sk)',
+    ExpressionAttributeValues: {
+      ':pk': `USER#${userId}`,
+      ':sk': `CONV#${conversationId}`,
+    },
+    ScanIndexForward: false, // This will sort in descending order (newest first)
+    Limit: 1,
+  })
+  const result = await dynamoDb.send(command)
+  return {
+    conversations: result.Items,
+  }
 }
 
 export default client

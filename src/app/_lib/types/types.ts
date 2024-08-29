@@ -1,4 +1,44 @@
-// types.ts
+/* Reference for Entities:
+User:
+PK: USER#
+SK: USER#
+Other attributes: name, email, preferred language, etc.
+eg:
+{
+  PK: 'USER#userId',
+  SK: 'USER#userId',
+  name: 'John Doe',
+  email: '...',
+  ...
+}
+
+Conversation:
+PK: USER#
+SK: CONV##
+Other attributes: lastMessageTimestamp, title, language, etc.
+eg:
+{
+  PK: 'USER#userId',
+  SK: 'CONV#timestamp#conversationId',
+  GSI1PK: 'USER#userId',
+  GSI1SK: 'CONV#conversationId',
+  title: '...',
+}
+
+Message:
+PK: CONV#
+SK: MSG##
+Other attributes: sender, content, audioUrl, etc.
+eg: 
+{
+  PK: 'CONV#conversationId',
+  SK: 'MSG#timestamp#messageId',
+  sender: '...',
+  content: '...',
+  ...
+}
+
+*/
 
 import { ILanguageCode } from '@/_context/types'
 
@@ -14,6 +54,10 @@ type UserSK = Branded<`#METADATA#${string}`, 'UserSK'>
 type ConversationSK = Branded<`CONV#${string}#${string}`, 'ConversationSK'>
 type MessageSK = Branded<`MSG#${string}#${string}`, 'MessageSK'>
 
+// GSI types
+type ConversationGSI1PK = Branded<`USER#${string}`, 'ConversationGSI1PK'>
+type ConversationGSI1SK = Branded<`CONV#${string}`, 'ConversationGSI1SK'>
+
 // Helper functions to create branded types
 const createUserPK = (userId: string): UserPK => `USER#${userId}` as UserPK
 const createConversationPK = (conversationId: string): ConversationPK =>
@@ -25,6 +69,10 @@ const createConversationSK = (
 ): ConversationSK => `CONV#${timestamp}#${conversationId}` as ConversationSK
 const createMessageSK = (timestamp: string, messageId: string): MessageSK =>
   `MSG#${timestamp}#${messageId}` as MessageSK
+const createConversationGSI1PK = (userId: string): ConversationGSI1PK =>
+  `USER#${userId}` as ConversationGSI1PK
+const createConversationGSI1SK = (conversationId: string): ConversationGSI1SK =>
+  `CONV#${conversationId}` as ConversationGSI1SK
 
 // Updated interfaces
 export interface User {
@@ -70,4 +118,9 @@ export const SK = {
   user: createUserSK,
   conversation: createConversationSK,
   message: createMessageSK,
+}
+
+export const GSI = {
+  conversation1PK: createConversationGSI1PK,
+  conversation1SK: createConversationGSI1SK,
 }

@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     }
 
     const generatedSystemPrompt = generateSystemPrompt(systemPrompt)
-    // Initialize a new conversation
+
     const { language } = systemPrompt
     const conversation = await initializeConversation(userId, {
       language,
