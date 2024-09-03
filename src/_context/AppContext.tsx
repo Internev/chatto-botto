@@ -8,40 +8,13 @@ import React, {
   useEffect,
 } from 'react'
 import { IAppState, IAction, IConversation } from './types'
-// import { continueClaudeConversation } from '../fetchers/claude'
 
 const exampleConversation: IConversation = {
-  id: '1',
-  messages: [
-    // {
-    //   id: '1',
-    //   userId: 'botto',
-    //   timestamp: Date.now(),
-    //   languages: {
-    //     en: [`Hello. How was your weekend?`],
-    //     main: ['こんにちは。休みは どうでしたか？'],
-    //     alt: ['Konnichiwa. Yasumi wa dou deshita ka?'],
-    //   },
-    //   audioUrls: {},
-    //   originalLanguage: 'ja',
-    //   agent: 'bot',
-    // },
-    // {
-    //   id: '2',
-    //   userId: 'user-1',
-    //   timestamp: Date.now(),
-    //   languages: {
-    //     en: [`On the weekend, I ate dinner with a friend.`],
-    //     main: ['しゅうまつは ともだちと ばんごはんを たべました'],
-    //     alt: ['Shuumatsu wa tomodachi to bangohan wo tabemashita.'],
-    //   },
-    //   audioUrls: {},
-    //   originalLanguage: 'ja',
-    //   agent: 'user',
-    // },
-  ],
-  createdAt: Date.now(),
-  updatedAt: Date.now(),
+  id: '',
+  messages: [],
+  createdAt: new Date(Date.now()).toISOString(),
+  updatedAt: new Date(Date.now()).toISOString(),
+  voiceId: 'Takumi',
 }
 
 const initialState: IAppState = {
@@ -73,31 +46,31 @@ function appReducer(state: IAppState, action: IAction): IAppState {
     case 'SET_CONVERSATION':
       return {
         ...state,
-        conversation: action.conversation,
+        conversation: { ...action.conversation },
         initialising: false,
       }
     case 'ADD_MESSAGE':
-      const newAddMessageConversation = { ...state.conversation }
-      newAddMessageConversation.messages.push(action.message)
       return {
         ...state,
-        conversation: newAddMessageConversation,
+        conversation: {
+          ...state.conversation,
+          messages: [...state.conversation.messages, action.message],
+        },
+      }
+    case 'ADD_MESSAGES':
+      return {
+        ...state,
+        conversation: {
+          ...state.conversation,
+          messages: [...state.conversation.messages, ...action.messages],
+        },
       }
     case 'UPDATE_MESSAGE':
       const newUpdateMessageConversation = { ...state.conversation }
-      console.log(
-        'orig message length:',
-        newUpdateMessageConversation.messages.length
-      )
-
       newUpdateMessageConversation.messages =
         newUpdateMessageConversation.messages.map((m) =>
           m.id === action.message.id ? action.message : m
         )
-      console.log(
-        'message length:',
-        newUpdateMessageConversation.messages.length
-      )
       return {
         ...state,
         conversation: newUpdateMessageConversation,
@@ -114,17 +87,6 @@ const AppContext = createContext<
     }
   | undefined
 >(undefined)
-
-// const getNewClaudeResponse = async (conversation: IConversation) => {
-//   console.log('Getting new Claude response...')
-//   // const languages = await continueClaudeConversation(conversation)
-//   const languages = {
-//     en: 'Hello. How was your weekend?',
-//     main: 'こんにちは。休みは どうでしたか？',
-//     alt: 'Konnichiwa. Yasumi wa dou deshita ka?',
-//   }
-//   return languages
-// }
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState)
