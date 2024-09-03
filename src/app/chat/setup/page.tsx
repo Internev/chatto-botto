@@ -53,9 +53,10 @@ const ChatbotSetup: React.FC = () => {
 
   const handleLanguageChange = (lang: ILanguage) => {
     const languageCode = lang.main
-    dispatch({ type: 'SET_LANGUAGE', language: languageCode })
+    const voiceId = lang.voices[0].id
     setLanguage(lang.name)
-    setPartner(lang.voices[0].name)
+    handleVoiceChange(voiceId)
+    dispatch({ type: 'SET_LANGUAGE', language: languageCode })
   }
 
   const handleVoiceChange = (voiceId: string) => {
@@ -70,13 +71,10 @@ const ChatbotSetup: React.FC = () => {
         scenario: selectedScenario,
         language: languages[language].main as ILanguageCode,
       },
-      voiceId: state.voiceId,
+      voiceId: state.voiceId || 'Takumi',
     })
     router.push('/chat')
   }
-
-  console.log('language', language)
-  console.log('voice', languages[language])
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -124,12 +122,12 @@ const ChatbotSetup: React.FC = () => {
               I want to speak with:
             </h2>
             <div className="grid grid-cols-2 gap-3">
-              {languages[language].voices.map(({ name, languageName }) => (
+              {languages[language].voices.map(({ id, name, languageName }) => (
                 <Option
                   key={name}
                   value={name}
-                  selected={partner === name}
-                  onClick={() => handleVoiceChange(name)}
+                  selected={partner === id}
+                  onClick={() => handleVoiceChange(id)}
                 >
                   {name}
                   {languageName === language ? '' : ` (${languageName})`}

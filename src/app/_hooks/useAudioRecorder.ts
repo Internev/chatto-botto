@@ -20,7 +20,7 @@ export function useAudioRecorder() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
 
-  const { processAudio } = useChat()
+  const { continueChat } = useChat()
 
   const startRecording = useCallback(async () => {
     setIsRecording(true)
@@ -42,7 +42,7 @@ export function useAudioRecorder() {
         const blob = new Blob(chunksRef.current, { type: 'audio/mp3' })
         setAudioBlob(blob)
 
-        await processAudio(blob)
+        await continueChat(blob)
       }
 
       mediaRecorderRef.current.start()

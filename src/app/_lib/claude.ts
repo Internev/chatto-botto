@@ -67,8 +67,6 @@ export const parseClaudeResponse = (response: Anthropic.Messages.Message) => {
 // claude-3-opus-20240229
 // claude-3-haiku-20240307
 
-let systemPrompt: string
-
 export const initClaude = async (systemPrompt: string) => {
   const key = process.env.ANTHROPIC_API_KEY
   const anthropic = new Anthropic({
@@ -85,8 +83,35 @@ export const initClaude = async (systemPrompt: string) => {
   return parseClaudeResponse(response)
 }
 
+const cleanConversation = (conversation: IConversation) => {
+  const cleanedMessages = []
+  let prevAgent = null
+  let prevMessage = null
+
+  for (const message of conversation.messages) {
+    if (message.agent !== prevAgent) {
+      cleanedMessages.push(message)
+      prevAgent = message.agent
+      prevMessage = message
+    } else {
+      const mLength = message.languages.main?.length || 0
+      const pLength = prevMessage?.languages.main?.length || 0
+      if (prevMessage && mLength > pLength) {
+        cleanedMessages.pop()
+        cleanedMessages.push(message)
+        prevMessage = message
+      }
+    }
+  }
+
+  return cleanedMessages
+}
+
 export const parseStateToClaude = async (conversation: IConversation) => {
-  const messages = conversation.messages.map((message) => {
+  console.log('Conversation:', conversation)
+  const santisedMessages = cleanConversation(conversation)
+
+  const messages = santisedMessages.map((message) => {
     if (!message.languages.main) {
       throw new Error('Expected main language in message languages')
     }
@@ -131,7 +156,11 @@ export const continueClaudeConversation = async (
     apiKey: key,
   })
 
+  const { systemPrompt } = conversation
+
   const claudeConversation = await parseStateToClaude(conversation)
+
+  console.log('Claude conversation:', JSON.stringify(claudeConversation))
 
   const response = await anthropic.messages.create({
     model: 'claude-3-haiku-20240307',

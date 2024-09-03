@@ -1,3 +1,5 @@
+import { VoiceId } from '@aws-sdk/client-polly'
+
 export type ILanguageCode =
   | 'en'
   | 'es'
@@ -10,7 +12,7 @@ export type ILanguageCode =
   | 'ko'
   | 'zh'
   | 'ro'
-  | 'se'
+  | 'sv'
   | 'main'
   | 'alt'
   | 'cor'
@@ -34,19 +36,22 @@ export interface IConversation {
   messages: IMessage[]
   createdAt: string
   updatedAt: string
+  voiceId: VoiceId
+  systemPrompt?: string
 }
 
 export interface IAppState {
   conversation: IConversation
   initialising: boolean
   language?: ILanguageCode
-  voiceId?: string
+  voiceId: VoiceId
 }
 
 export type IAction =
   | { type: 'SET_INITIALISING'; initialising: boolean }
   | { type: 'SET_LANGUAGE'; language: ILanguageCode }
-  | { type: 'SET_VOICE'; voiceId: string }
+  | { type: 'SET_VOICE'; voiceId: VoiceId }
   | { type: 'SET_CONVERSATION'; conversation: IConversation }
   | { type: 'ADD_MESSAGE'; message: IMessage }
+  | { type: 'ADD_MESSAGES'; messages: IMessage[] }
   | { type: 'UPDATE_MESSAGE'; message: IMessage }

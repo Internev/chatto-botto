@@ -22,6 +22,11 @@ const Message: React.FC<IMessageProps> = ({ message }) => {
     }
   }
 
+  if (!message.languages?.main) {
+    console.log('No main language in message:', message)
+    return null
+  }
+
   return (
     <div
       key={message.id}

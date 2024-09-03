@@ -20,31 +20,39 @@ export async function POST(request: Request) {
     const generatedSystemPrompt = generateSystemPrompt(systemPrompt)
 
     const { language } = systemPrompt
+    console.log('init chat language:', language)
     const conversation = await initializeConversation(userId, {
       language,
-      systemPrompt,
-    })
+      systemPrompt: generatedSystemPrompt,
+      voiceId,
+    }) // TODO: type this
 
-    const languages = await initClaude(generatedSystemPrompt)
-    const audioToSpeak = languages.main.join(' ')
+    const claudeResponse = await initClaude(generatedSystemPrompt)
+    const audioToSpeak = claudeResponse.main.join(' ')
     const audioUrl = await speak(audioToSpeak, voiceId)
 
     const newMessage: IMessage = {
       id: uuidv4(),
       timestamp: new Date(Date.now()).toISOString(),
       userId: userId,
-      languages,
+      languages: claudeResponse,
       originalLanguage: language,
       agent: 'bot',
-      audioUrls: {
-        main: 'data:audio/mp3;base64,' + audioUrl,
-      },
+      // We don't want to save audioUrls in the database, TODO put in s3
+      // audioUrls: {
+      //   main: 'data:audio/mp3;base64,' + audioUrl,
+      // },
     }
-    await appendMessageToConversation(conversation.conversationId, newMessage)
+    await appendMessageToConversation(conversation.id, newMessage)
 
     return NextResponse.json({
       conversation,
-      initialMessage: newMessage,
+      initialMessage: {
+        ...newMessage,
+        audioUrls: {
+          main: 'data:audio/mp3;base64,' + audioUrl,
+        },
+      },
     })
   } catch (error) {
     console.error('Error initializing chat:', error)

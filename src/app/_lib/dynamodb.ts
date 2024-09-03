@@ -14,7 +14,7 @@ import {
 } from '@aws-sdk/lib-dynamodb'
 import { v4 as uuidv4 } from 'uuid'
 import { GSI, PK, SK } from './types/types'
-import { IMessage } from '@/_context/types'
+import { IConversation, IMessage } from '@/_context/types'
 
 const client = new DynamoDBClient({
   region: 'localhost',
@@ -153,14 +153,14 @@ export const initializeConversation = async (
   initialData: any
 ) => {
   const timestamp = new Date(Date.now()).toISOString()
-  const conversationId = uuidv4()
+  const id = uuidv4()
   const item = {
-    PK: PK.user(userId),
-    SK: SK.conversation(timestamp, conversationId),
-    GSI1PK: GSI.conversation1PK(userId),
-    GSI1SK: GSI.conversation1SK(conversationId),
+    id,
     userId,
-    conversationId,
+    PK: PK.user(userId),
+    SK: SK.conversation(timestamp, id),
+    GSI1PK: GSI.conversation1PK(userId),
+    GSI1SK: GSI.conversation1SK(id),
     createdAt: timestamp,
     updatedAt: timestamp,
     ...initialData,
@@ -169,10 +169,7 @@ export const initializeConversation = async (
     TableName: tableName,
     Item: item,
   })
-  const listTables = new ListTablesCommand({})
-  const listTablesResponse = await client.send(listTables)
-  console.log('listTablesResponse:', listTablesResponse)
-  console.log('about to write to db:', command)
+
   await dynamoDb.send(command)
   return item
 }
@@ -191,13 +188,15 @@ export const appendMessageToConversation = async (
     },
   })
   await dynamoDb.send(command)
+  const messages = await getConversationMessages(conversationId)
+  console.log('all messages now:', JSON.stringify(messages))
   return message.id
 }
 
 export const getConversation = async (
   userId: string,
   conversationId: string
-) => {
+): Promise<IConversation> => {
   const command = new QueryCommand({
     TableName: tableName,
     IndexName: 'GSI1',
@@ -210,9 +209,15 @@ export const getConversation = async (
     Limit: 1,
   })
   const result = await dynamoDb.send(command)
-  return {
-    conversations: result.Items,
+  const conversation = result.Items?.[0] as IConversation
+  if (!conversation) {
+    console.log('Conversation not found, id:', conversationId)
+    console.log('Conversation not found, result:', result)
+    throw new Error('Conversation not found')
   }
+  const messages = await getConversationMessages(conversationId)
+  conversation.messages = messages.messages as IMessage[]
+  return conversation
 }
 
 export default client

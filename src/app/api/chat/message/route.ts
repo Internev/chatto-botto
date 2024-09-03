@@ -8,7 +8,6 @@ import {
   appendMessageToConversation,
   getConversation,
 } from '@/app/_lib/dynamodb'
-import { languages } from '@/_config/languages'
 import { ILanguageCode, IMessage } from '@/_context/types'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -29,30 +28,52 @@ export async function POST(request: Request) {
   try {
     const transcription = await transcribe(formData)
 
-    const newMessage: IMessage = {
+    if (!transcription) {
+      return NextResponse.json(
+        { error: 'Failed to transcribe audio' },
+        { status: 500 }
+      )
+    }
+
+    const userMessage: IMessage = {
       id: uuidv4(),
       timestamp: new Date(Date.now()).toISOString(),
       userId: userId,
-      languages,
+      languages: {
+        main: [transcription],
+      },
       originalLanguage: language,
       agent: 'user',
     }
-    await appendMessageToConversation(conversationId, newMessage)
+    await appendMessageToConversation(conversationId, userMessage)
 
     console.log('transcription:', transcription)
     const conversation = await getConversation(userId, conversationId)
-    console.log('🌃🌃🌃Conversation:', conversation)
-    // export interface IConversation {
-    //   id: string
-    //   messages: IMessage[]
-    //   createdAt: string
-    //   updatedAt: string
-    // }
+    // console.log('🌃🌃🌃Conversation:', conversation)
+
+    const claudeResponse = await continueClaudeConversation(conversation)
+    console.log('🤖🤖🤖Claude response:', claudeResponse)
+
+    const botMessage: IMessage = {
+      id: uuidv4(),
+      timestamp: new Date(Date.now()).toISOString(),
+      userId: userId,
+      languages: claudeResponse,
+      originalLanguage: language,
+      agent: 'bot',
+    }
+    await appendMessageToConversation(conversationId, botMessage)
+    const audioToSpeak = claudeResponse.main.join(' ')
+    const audioUrl = await speak(audioToSpeak, conversation.voiceId)
 
     return NextResponse.json({
-      transcription,
-      botResponse: 'claudeResponse',
-      audioUrl: 'audioResponse',
+      userMessage: userMessage,
+      botMessage: {
+        ...botMessage,
+        audioUrls: {
+          main: 'data:audio/mp3;base64,' + audioUrl,
+        },
+      },
     })
   } catch (error) {
     console.error('Error in chat process:', error)
