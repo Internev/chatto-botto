@@ -196,7 +196,7 @@ export const languages: ILanguageSetup = {
   },
   Swedish: {
     name: 'Swedish',
-    main: 'se',
+    main: 'sv',
     voices: [
       {
         gender: 'Female',
