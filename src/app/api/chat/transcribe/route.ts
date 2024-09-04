@@ -12,43 +12,43 @@ import { ILanguageCode, IMessage } from '@/_context/types'
 import { v4 as uuidv4 } from 'uuid'
 
 export async function POST(request: Request) {
-  const { userId, conversationId, language } = await request.json()
+  const formData = await request.formData()
+  const audioFile = formData.get('audio') as File
+  const language = formData.get('language') as ILanguageCode
+  const conversationId = formData.get('conversationId') as string
+  const userId = 'user-1' // TODO: Get user ID from session
 
-  if (!userId) {
-    return NextResponse.json({ error: 'No user id provided' }, { status: 400 })
-  }
-
-  if (!conversationId) {
+  if (!audioFile) {
     return NextResponse.json(
-      { error: 'No conversation id provided' },
+      { error: 'No audio file provided' },
       { status: 400 }
     )
   }
 
   try {
-    const conversation = await getConversation(userId, conversationId)
+    const transcription = await transcribe(formData)
 
-    const claudeResponse = await continueClaudeConversation(conversation)
+    if (!transcription) {
+      return NextResponse.json(
+        { error: 'Failed to transcribe audio' },
+        { status: 500 }
+      )
+    }
 
-    const botMessage: IMessage = {
+    const userMessage: IMessage = {
       id: uuidv4(),
       timestamp: new Date(Date.now()).toISOString(),
       userId: userId,
-      languages: claudeResponse,
+      languages: {
+        main: [transcription],
+      },
       originalLanguage: language,
-      agent: 'bot',
+      agent: 'user',
     }
-    await appendMessageToConversation(conversationId, botMessage)
-    const audioToSpeak = claudeResponse.main.join(' ')
-    const audioUrl = await speak(audioToSpeak, conversation.voiceId)
+    await appendMessageToConversation(conversationId, userMessage)
 
     return NextResponse.json({
-      botMessage: {
-        ...botMessage,
-        audioUrls: {
-          main: 'data:audio/mp3;base64,' + audioUrl,
-        },
-      },
+      userMessage: userMessage,
     })
   } catch (error) {
     console.error('Error in chat process:', error)

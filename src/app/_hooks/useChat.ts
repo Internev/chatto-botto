@@ -3,6 +3,7 @@
 import { useAppContext } from '@/_context/AppContext'
 import { ILanguageCode } from '@/_context/types'
 import { ISystemPromptInput } from '@/app/_lib/_prompting/prompts'
+import { VoiceId } from '@aws-sdk/client-polly'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 export function useChat() {
@@ -36,28 +37,43 @@ export function useChat() {
       formData.append('conversationId', currentState.conversation.id)
 
       try {
-        const response = await fetch('/api/chat/message', {
+        const transcriptionResponse = await fetch('/api/chat/transcribe', {
           method: 'POST',
           body: formData,
         })
 
-        if (!response.ok) {
+        if (!transcriptionResponse.ok) {
           throw new Error('Failed to process audio')
         }
 
-        const { userMessage, botMessage } = await response.json()
-        console.log('🤖🤖🤖🤖 next messages:', userMessage, botMessage)
+        const { userMessage } = await transcriptionResponse.json()
         setTranscription(userMessage.languages.main[0])
 
         dispatch({
-          type: 'ADD_MESSAGES',
-          messages: [
-            {
-              ...userMessage,
-              audioUrls: { main: URL.createObjectURL(audioBlob) },
-            },
-            botMessage,
-          ],
+          type: 'ADD_MESSAGE',
+          message: {
+            ...userMessage,
+            audioUrls: { main: URL.createObjectURL(audioBlob) },
+          },
+        })
+
+        const messageResponse = await fetch('/api/chat/message', {
+          method: 'POST',
+          body: JSON.stringify({
+            userId: 'user-1',
+            conversationId: currentState.conversation.id,
+            language: currentState.language,
+          }),
+        })
+
+        if (!messageResponse.ok) {
+          throw new Error('Failed to process message')
+        }
+
+        const { botMessage } = await messageResponse.json()
+        dispatch({
+          type: 'ADD_MESSAGE',
+          message: botMessage,
         })
       } catch (err) {
         setError(
