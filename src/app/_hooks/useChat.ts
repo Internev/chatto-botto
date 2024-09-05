@@ -22,13 +22,7 @@ export function useChat() {
   const continueChat = useCallback(
     async (audioBlob: Blob) => {
       const currentState = stateRef.current
-      console.log('state', state)
       if (!currentState.conversation.id.length) {
-        console.log(
-          'state is still not updated',
-          Date.now(),
-          JSON.parse(JSON.stringify(state))
-        )
         throw new Error('No conversation found')
       }
       const formData = new FormData()
@@ -91,34 +85,39 @@ export function useChat() {
     voiceId: string
   }
 
-  const initialiseChat = useCallback(async (initChat: IInitialiseChat) => {
-    try {
-      const response = await fetch('/api/chat/init', {
-        method: 'POST',
-        body: JSON.stringify(initChat),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+  const initialiseChat = useCallback(
+    async (initChat: IInitialiseChat) => {
+      try {
+        const response = await fetch('/api/chat/init', {
+          method: 'POST',
+          body: JSON.stringify(initChat),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
 
-      if (!response.ok) {
-        throw new Error('Failed to initialise chat')
+        if (!response.ok) {
+          throw new Error('Failed to initialise chat')
+        }
+
+        const { conversation, initialMessage } = await response.json()
+
+        console.log('we got conversation back, setting in state:', conversation)
+        dispatch({
+          type: 'SET_CONVERSATION',
+          conversation: {
+            ...conversation,
+            messages: [initialMessage],
+          },
+        })
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'An unknown error occurred'
+        )
       }
-
-      const { conversation, initialMessage } = await response.json()
-
-      console.log('we got conversation back, setting in state:', conversation)
-      dispatch({
-        type: 'SET_CONVERSATION',
-        conversation: {
-          ...conversation,
-          messages: [initialMessage],
-        },
-      })
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred')
-    }
-  }, [])
+    },
+    [dispatch]
+  )
 
   return {
     continueChat,

@@ -50,7 +50,7 @@ export function useAudioRecorder() {
       console.error('Error accessing microphone:', error)
       setIsRecording(false)
     }
-  }, [])
+  }, [continueChat])
 
   const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current && isRecording) {

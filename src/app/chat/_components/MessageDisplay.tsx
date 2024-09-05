@@ -21,7 +21,7 @@ const MessageDisplay: React.FC = () => {
   if (messages.length === 0) {
     return (
       <div>
-        No messages, maybe you'd like to{' '}
+        No messages, maybe you`&apos;d like to{' '}
         <Link href="/chat/setup">start a new chat</Link>
       </div>
     )
