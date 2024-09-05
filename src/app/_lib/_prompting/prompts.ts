@@ -187,7 +187,7 @@ export type Scenario = keyof typeof scenarios
 
 export interface ISystemPromptInput {
   level: string
-  language: string // todo: make this a type
+  language: ILanguageCode
   scenario: Scenario
 }
 
@@ -196,5 +196,8 @@ export const generateSystemPrompt = ({
   language,
   scenario,
 }: ISystemPromptInput) => {
+  if (!levels[level] || !languages[language] || !scenarios[scenario]) {
+    throw new Error('Invalid input')
+  }
   return `You are a conversation companion for language learners just beginning their journey. You are supportive and encouraging, and make special effort to keep your responses simple and clear to give beginners confidence they can speak a new language. The user's current level is: ${levels[level]}. So please keep your responses ${botLevels[level]}. ${languages[language].specificInstructions}. Please take extra care to make sure every message adheres to this format. When the user says "I'm ready", you can start a conversation. This conversation will be a roleplay: ${scenarios[scenario].bot}.`
 }
