@@ -88,6 +88,10 @@ export function useChat() {
   const initialiseChat = useCallback(
     async (initChat: IInitialiseChat) => {
       try {
+        dispatch({
+          type: 'SET_INITIALISING',
+          initialising: true,
+        })
         const response = await fetch('/api/chat/init', {
           method: 'POST',
           body: JSON.stringify(initChat),
