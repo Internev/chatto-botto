@@ -39,7 +39,9 @@ const client = new DynamoDBClient(
 
 const tableName = 'Chatto-Botto'
 
+console.log('isProduction:', isProduction)
 export const dynamoDb = DynamoDBDocumentClient.from(client)
+console.log('dynamoDb:', dynamoDb)
 
 export const createConversationsTable = async (): Promise<
   CreateTableCommandOutput | true
@@ -182,6 +184,7 @@ export const initializeConversation = async (
     Item: item,
   })
 
+  console.log('initializing conversation:', item)
   await dynamoDb.send(command)
   return item
 }
