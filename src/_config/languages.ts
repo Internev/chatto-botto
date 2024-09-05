@@ -1,8 +1,9 @@
 import { ILanguageCode } from '@/_context/types'
+import { VoiceId } from '@aws-sdk/client-polly'
 
 interface IVoice {
   gender: 'Female' | 'Male'
-  id: string
+  id: VoiceId
   languageCode: string
   languageName: string
   name: string

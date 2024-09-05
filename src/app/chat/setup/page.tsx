@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { useAppContext } from '@/_context/AppContext'
 import { ILanguageCode } from '@/_context/types'
 import { useChat } from '@/app/_hooks/useChat'
+import { VoiceId } from '@aws-sdk/client-polly'
 
 interface OptionProps {
   value: string
@@ -21,8 +22,8 @@ const levels: string[] = ['1', '2', '3', '4']
 const ChatbotSetup: React.FC = () => {
   const [language, setLanguage] = useState<string>(languages.Japanese.name)
   const [level, setLevel] = useState<string>(levels[0])
-  const [partner, setPartner] = useState<string>(
-    languages.Japanese.voices[0].name
+  const [partner, setPartner] = useState<VoiceId>(
+    languages.Japanese.voices[0].id
   )
   const [selectedScenario, setSelectedScenario] = useState<Scenario>(
     Object.keys(scenarios)[0] as Scenario
@@ -53,13 +54,13 @@ const ChatbotSetup: React.FC = () => {
 
   const handleLanguageChange = (lang: ILanguage) => {
     const languageCode = lang.main
-    const voiceId = lang.voices[0].id
+    const voiceId = lang.voices[0].id as VoiceId
     setLanguage(lang.name)
     handleVoiceChange(voiceId)
     dispatch({ type: 'SET_LANGUAGE', language: languageCode })
   }
 
-  const handleVoiceChange = (voiceId: string) => {
+  const handleVoiceChange = (voiceId: VoiceId) => {
     setPartner(voiceId)
     dispatch({ type: 'SET_VOICE', voiceId })
   }
