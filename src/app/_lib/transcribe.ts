@@ -15,13 +15,20 @@ const transcribe = async (formData: FormData) => {
   }
   const audioFile = await OpenAI.toFile(audio, 'audio.webm')
   try {
-    const transcription = await openai.audio.transcriptions.create({
-      file: audioFile,
-      model: 'whisper-1',
-      language,
-    })
+    const [transcription, translation] = await Promise.all([
+      openai.audio.transcriptions.create({
+        file: audioFile,
+        model: 'whisper-1',
+        language,
+      }),
+      openai.audio.translations.create({
+        file: audioFile,
+        model: 'whisper-1',
+      }),
+    ])
     console.log('transcription:', transcription)
-    return transcription.text
+    console.log('translation:', translation)
+    return [transcription.text, translation.text]
   } catch (error) {
     console.error('Error:', error)
     return null

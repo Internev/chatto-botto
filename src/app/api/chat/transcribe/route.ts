@@ -21,7 +21,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    const transcription = await transcribe(formData)
+    const response = await transcribe(formData)
+    const transcription = response?.[0]
+    const translation = response?.[1]
 
     if (!transcription) {
       return NextResponse.json(
@@ -36,6 +38,7 @@ export async function POST(request: Request) {
       userId: userId,
       languages: {
         main: [transcription],
+        en: [translation || ''],
       },
       originalLanguage: language,
       agent: 'user',
