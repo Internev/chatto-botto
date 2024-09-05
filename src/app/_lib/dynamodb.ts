@@ -16,14 +16,26 @@ import { v4 as uuidv4 } from 'uuid'
 import { GSI, PK, SK } from './types/types'
 import { IConversation, IMessage } from '@/_context/types'
 
-const client = new DynamoDBClient({
-  region: 'localhost',
-  endpoint: 'http://localhost:8000',
-  credentials: {
-    accessKeyId: 'fakeMyKeyId',
-    secretAccessKey: 'fakeSecretAccessKey',
-  },
-})
+const isProduction = process.env.NODE_ENV === 'production'
+
+const client = new DynamoDBClient(
+  isProduction
+    ? {
+        region: process.env.AWS_REGION,
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        },
+      }
+    : {
+        region: 'localhost',
+        endpoint: 'http://localhost:8000',
+        credentials: {
+          accessKeyId: 'fakeMyKeyId',
+          secretAccessKey: 'fakeSecretAccessKey',
+        },
+      }
+)
 
 const tableName = 'Chatto-Botto'
 
