@@ -5,7 +5,7 @@ provider "aws" {
 
 # Create a DynamoDB table
 resource "aws_dynamodb_table" "conversations_table" {
-  name           = "Conversations"
+  name           = "Chatto-Botto"
   billing_mode   = "PROVISIONED"
   read_capacity  = 1
   write_capacity = 1
