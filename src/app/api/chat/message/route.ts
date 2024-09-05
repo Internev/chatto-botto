@@ -1,14 +1,13 @@
 // app/api/chat-process/route.ts
 
 import { NextResponse } from 'next/server'
-import transcribe from '@/app/_lib/transcribe'
 import { continueClaudeConversation } from '@/app/_lib/claude'
 import speak from '@/app/_lib/speak'
 import {
   appendMessageToConversation,
   getConversation,
 } from '@/app/_lib/dynamodb'
-import { ILanguageCode, IMessage } from '@/_context/types'
+import { IMessage } from '@/_context/types'
 import { v4 as uuidv4 } from 'uuid'
 
 export async function POST(request: Request) {

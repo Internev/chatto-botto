@@ -2,12 +2,7 @@
 
 import { NextResponse } from 'next/server'
 import transcribe from '@/app/_lib/transcribe'
-import { continueClaudeConversation } from '@/app/_lib/claude'
-import speak from '@/app/_lib/speak'
-import {
-  appendMessageToConversation,
-  getConversation,
-} from '@/app/_lib/dynamodb'
+import { appendMessageToConversation } from '@/app/_lib/dynamodb'
 import { ILanguageCode, IMessage } from '@/_context/types'
 import { v4 as uuidv4 } from 'uuid'
 
