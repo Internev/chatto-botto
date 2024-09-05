@@ -17,19 +17,27 @@ interface OptionProps {
   children: React.ReactNode
 }
 
+const getLanguageName = (language: ILanguageCode | undefined) => {
+  if (!language) return undefined
+  return Object.entries(languages).find(([_, l]) => l.main === language)?.[0]
+}
+
 const levels: string[] = ['1', '2', '3', '4']
 
 const ChatbotSetup: React.FC = () => {
-  const [language, setLanguage] = useState<string>(languages.Japanese.name)
+  const { state, dispatch } = useAppContext()
+
+  const [language, setLanguage] = useState<string>(
+    getLanguageName(state.language) || languages.Japanese.name
+  )
   const [level, setLevel] = useState<string>(levels[0])
   const [partner, setPartner] = useState<VoiceId>(
-    languages.Japanese.voices[0].id
+    state.voiceId || languages.Japanese.voices[0].id
   )
   const [selectedScenario, setSelectedScenario] = useState<Scenario>(
     Object.keys(scenarios)[0] as Scenario
   )
 
-  const { state, dispatch } = useAppContext()
   const router = useRouter()
   const { initialiseChat } = useChat()
 
@@ -123,7 +131,7 @@ const ChatbotSetup: React.FC = () => {
               I want to speak with:
             </h2>
             <div className="grid grid-cols-2 gap-3">
-              {languages[language].voices.map(({ id, name, languageName }) => (
+              {languages[language]?.voices.map(({ id, name, languageName }) => (
                 <Option
                   key={name}
                   value={name}
