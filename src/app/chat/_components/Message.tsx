@@ -37,8 +37,7 @@ const Message: React.FC<IMessageProps> = ({ message }) => {
       } max-w-[70%]`}
     >
       <div className="flex justify-end">
-        {/* {message.agent === 'bot' && ( */}
-        <>
+        {message.originalLanguage === 'ja' && (
           <div className="ml-auto w-1/5">
             <button onClick={() => setShowAlt(!showAlt)}>
               <span className={showAlt ? 'text-gray-900' : 'text-gray-300'}>
@@ -46,15 +45,14 @@ const Message: React.FC<IMessageProps> = ({ message }) => {
               </span>
             </button>
           </div>
-          <div className="ml-2 w-1/5">
-            <button onClick={() => setShowEn(!showEn)}>
-              <span className={showEn ? 'text-gray-900' : 'text-gray-300'}>
-                en
-              </span>
-            </button>
-          </div>
-        </>
-        {/* )} */}
+        )}
+        <div className="ml-2 w-1/5">
+          <button onClick={() => setShowEn(!showEn)}>
+            <span className={showEn ? 'text-gray-900' : 'text-gray-300'}>
+              en
+            </span>
+          </button>
+        </div>
       </div>
 
       <div className="flex items-center">
