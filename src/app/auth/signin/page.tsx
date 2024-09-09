@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
+import Link from 'next/link'
 
 export default function SignupPage() {
-  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -14,22 +14,13 @@ export default function SignupPage() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const response = await fetch('/api/auth/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, email, password }),
-    })
-    console.log('signup response', response)
-
     const result = await signIn('credentials', {
       email,
       password,
       callbackUrl: '/chat/setup',
     })
+    console.log('sign in result:', result)
 
-    console.log('(signup)sign in result:', result)
     if (result?.error) {
       console.log('error', result.error)
       setError(result.error)
@@ -40,20 +31,8 @@ export default function SignupPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-3xl font-bold mb-4">Signup</h1>
+      <h1 className="text-3xl font-bold mb-4">Sign in</h1>
       <form onSubmit={handleSignup} className="w-64">
-        <div className="mb-4">
-          <label htmlFor="email" className="block mb-2">
-            Name
-          </label>
-          <input
-            type="name"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
         <div className="mb-4">
           <label htmlFor="email" className="block mb-2">
             Email
@@ -82,9 +61,10 @@ export default function SignupPage() {
           type="submit"
           className="w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600"
         >
-          Sign up
+          Sign in
         </button>
       </form>
+      <Link href="/auth/signup">No account yet?</Link>
       {error && <p className="text-red-500 mt-4">{error}</p>}
     </div>
   )

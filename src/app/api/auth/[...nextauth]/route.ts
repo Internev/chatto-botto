@@ -56,11 +56,17 @@ export const authOptions = {
             email: user.email,
           }
         }
-
         return null
       },
     }),
   ],
+  // pages: {
+  //   signIn: '/auth/signin',
+  //   // signOut: '/auth/signout',
+  //   // error: '/auth/error',
+  //   // verifyRequest: '/auth/verify-request',
+  //   newUser: '/auth/signup',
+  // },
 }
 
 const handler = NextAuth(authOptions)
