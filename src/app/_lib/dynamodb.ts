@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt'
 import {
   DynamoDBClient,
   CreateTableCommand,
@@ -18,7 +19,7 @@ import { IConversation, IMessage } from '@/_context/types'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
-const client = new DynamoDBClient(
+export const dynamoDbclient = new DynamoDBClient(
   isProduction
     ? {
         region: process.env.AWS_REGION,
@@ -39,9 +40,7 @@ const client = new DynamoDBClient(
 
 const tableName = 'Chatto-Botto'
 
-console.log('isProduction:', isProduction)
-export const dynamoDb = DynamoDBDocumentClient.from(client)
-console.log('dynamoDb:', dynamoDb)
+export const dynamoDb = DynamoDBDocumentClient.from(dynamoDbclient)
 
 export const createConversationsTable = async (): Promise<
   CreateTableCommandOutput | true
@@ -81,7 +80,7 @@ export const createConversationsTable = async (): Promise<
   })
 
   try {
-    const result = await client.send(command)
+    const result = await dynamoDbclient.send(command)
     console.log('Table created successfully:', result)
     return result
   } catch (error) {
@@ -95,16 +94,64 @@ export const createConversationsTable = async (): Promise<
   }
 }
 
-export const getUser = async (userId: string) => {
+export const checkPassword = async (password: string, hash: string) => {
+  return bcrypt.compare(password, hash)
+}
+
+export const hashPassword = async (password: string) => {
+  const saltRounds = 10
+  return bcrypt.hash(password, saltRounds)
+}
+
+export const createUser = async (email: string, password: string) => {
+  const timestamp = new Date(Date.now()).toISOString()
+  const hashedPassword = await hashPassword(password)
+  const id = uuidv4()
+  const item = {
+    id,
+    email,
+    password: hashedPassword,
+    PK: PK.user(id),
+    SK: SK.user(id),
+    GSI1PK: GSI.userEmail1PK(email),
+    GSI1SK: GSI.userEmail1SK(email),
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  }
+  const command = new PutCommand({
+    TableName: tableName,
+    Item: item,
+  })
+  await dynamoDb.send(command)
+  return item
+}
+
+export const getUserById = async (userId: string) => {
   const command = new GetCommand({
     TableName: tableName,
     Key: {
       PK: `USER#${userId}`,
-      SK: `#METADATA#${userId}`,
+      SK: `USER#${userId}`,
     },
   })
   const result = await dynamoDb.send(command)
   return result.Item
+}
+
+export const getUserByEmail = async (email: string) => {
+  console.log('getUserByEmail email:', email)
+  const command = new QueryCommand({
+    TableName: tableName,
+    IndexName: 'GSI1',
+    KeyConditionExpression: 'GSI1PK = :pk AND GSI1SK = :sk',
+    ExpressionAttributeValues: {
+      ':pk': `USER#${email}`,
+      ':sk': `USER#${email}`,
+    },
+  })
+  const result = await dynamoDb.send(command)
+  console.log('getUserByEmail:', result)
+  return result.Items?.[0]
 }
 
 // Get a conversation by id (last 50 messages)
@@ -235,4 +282,4 @@ export const getConversation = async (
   return conversation
 }
 
-export default client
+export default dynamoDbclient

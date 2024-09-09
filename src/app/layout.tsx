@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { AppProvider } from '@/_context/AppContext'
+import Header from './chat/_components/Header'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,7 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AppProvider>{children}</AppProvider>
+        <AppProvider>
+          <Header />
+          <main>{children}</main>
+        </AppProvider>
       </body>
     </html>
   )

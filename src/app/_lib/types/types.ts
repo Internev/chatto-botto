@@ -50,19 +50,21 @@ type UserPK = Branded<`USER#${string}`, 'UserPK'>
 type ConversationPK = Branded<`CONV#${string}`, 'ConversationPK'>
 
 // SK types
-type UserSK = Branded<`#METADATA#${string}`, 'UserSK'>
+type UserSK = Branded<`USER#${string}`, 'UserSK'>
 type ConversationSK = Branded<`CONV#${string}#${string}`, 'ConversationSK'>
 type MessageSK = Branded<`MSG#${string}#${string}`, 'MessageSK'>
 
 // GSI types
 type ConversationGSI1PK = Branded<`USER#${string}`, 'ConversationGSI1PK'>
 type ConversationGSI1SK = Branded<`CONV#${string}`, 'ConversationGSI1SK'>
+type UserEmailGSI1PK = Branded<`USER#${string}`, 'UserEmailGSI1PK'>
+type UserEmailGSI1SK = Branded<`USER#${string}`, 'UserEmailGSI1SK'>
 
 // Helper functions to create branded types
 const createUserPK = (userId: string): UserPK => `USER#${userId}` as UserPK
 const createConversationPK = (conversationId: string): ConversationPK =>
   `CONV#${conversationId}` as ConversationPK
-const createUserSK = (userId: string): UserSK => `#METADATA#${userId}` as UserSK
+const createUserSK = (userId: string): UserSK => `USER#${userId}` as UserSK
 const createConversationSK = (
   timestamp: string,
   conversationId: string
@@ -73,6 +75,10 @@ const createConversationGSI1PK = (userId: string): ConversationGSI1PK =>
   `USER#${userId}` as ConversationGSI1PK
 const createConversationGSI1SK = (conversationId: string): ConversationGSI1SK =>
   `CONV#${conversationId}` as ConversationGSI1SK
+const createUserEmailGSI1PK = (email: string): UserEmailGSI1PK =>
+  `USER#${email}` as UserEmailGSI1PK
+const createUserEmailGSI1SK = (email: string): UserEmailGSI1SK =>
+  `USER#${email}` as UserEmailGSI1SK
 
 // Updated interfaces
 export interface User {
@@ -123,4 +129,6 @@ export const SK = {
 export const GSI = {
   conversation1PK: createConversationGSI1PK,
   conversation1SK: createConversationGSI1SK,
+  userEmail1PK: createUserEmailGSI1PK,
+  userEmail1SK: createUserEmailGSI1SK,
 }

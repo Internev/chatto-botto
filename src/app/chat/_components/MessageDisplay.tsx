@@ -25,7 +25,7 @@ const MessageDisplay: React.FC = () => {
 
   if (messages.length === 0) {
     return (
-      <div>
+      <div className="flex justify-center items-center flex-col">
         No messages, maybe you`&apos;d like to{' '}
         <Link href="/chat/setup">start a new chat</Link>
       </div>
