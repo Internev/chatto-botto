@@ -1,13 +1,11 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { DynamoDB, DynamoDBClientConfig } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb'
 import { DynamoDBAdapter } from '@auth/dynamodb-adapter'
 import {
   checkPassword,
   dynamoDbclient,
   getUserByEmail,
-  hashPassword,
 } from '@/app/_lib/dynamodb'
 import type { Adapter } from 'next-auth/adapters'
 
@@ -30,18 +28,23 @@ export const authOptions = {
     CredentialsProvider({
       name: 'Email',
       credentials: {
-        username: {
+        email: {
           label: 'Email',
-          type: 'text',
+          type: 'email',
           placeholder: 'robot@chatto-botto.com',
         },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        if (!credentials?.password || !credentials?.username) {
+        if (!credentials?.password || !credentials?.email) {
+          console.log(
+            'No credentials provided',
+            credentials?.email,
+            credentials?.password
+          )
           return null
         }
-        const email = credentials.username
+        const email = credentials.email
         const user = await getUserByEmail(email)
 
         if (!user || !user.password) {
@@ -60,13 +63,30 @@ export const authOptions = {
       },
     }),
   ],
-  // pages: {
-  //   signIn: '/auth/signin',
-  //   // signOut: '/auth/signout',
-  //   // error: '/auth/error',
-  //   // verifyRequest: '/auth/verify-request',
-  //   newUser: '/auth/signup',
-  // },
+  session: {
+    strategy: 'jwt',
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+      }
+      return token
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id
+      }
+      return session
+    },
+  },
+  pages: {
+    signIn: '/auth/signin',
+    // signOut: '/auth/signout',
+    // error: '/auth/error',
+    // verifyRequest: '/auth/verify-request',
+    newUser: '/auth/signup',
+  },
 }
 
 const handler = NextAuth(authOptions)

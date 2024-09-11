@@ -1,6 +1,6 @@
 'use client'
 
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -10,6 +10,9 @@ const Header = () => {
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen)
   }
+
+  // const session = useSession()
+  // console.log('session', session)
 
   return (
     <header className="bg-white p-1">

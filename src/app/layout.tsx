@@ -3,10 +3,11 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 
 import { AppProvider } from '@/_context/AppContext'
-import Header from './chat/_components/Header'
+import Header from './_layoutComponents/Header'
 
 import { PHProvider } from './providers'
 import dynamic from 'next/dynamic'
+import { ClientRootLayout } from './_layoutComponents/SessionProvider'
 
 const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
   ssr: false,
@@ -29,9 +30,10 @@ export default function RootLayout({
       <PHProvider>
         <body className={inter.className}>
           <AppProvider>
-            <PostHogPageView />
-            <Header />
-            <main>{children}</main>
+            <ClientRootLayout>
+              <PostHogPageView />
+              <main>{children}</main>
+            </ClientRootLayout>
           </AppProvider>
         </body>
       </PHProvider>

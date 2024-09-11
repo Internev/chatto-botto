@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { signIn } from 'next-auth/react'
+import { useEffect, useState } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
+import { signIn, useSession } from 'next-auth/react'
 import Link from 'next/link'
 
 export default function SignupPage() {
@@ -10,29 +10,48 @@ export default function SignupPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const router = useRouter()
+  const pathname = usePathname()
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const { data: session, status } = useSession()
 
-    const result = await signIn('credentials', {
-      email,
-      password,
-      callbackUrl: '/chat/setup',
-    })
-    console.log('sign in result:', result)
-
-    if (result?.error) {
-      console.log('error', result.error)
-      setError(result.error)
-    } else {
+  useEffect(() => {
+    if (session) {
+      console.log('Session established:', session, status)
       router.push('/chat/setup')
+    }
+  }, [session, router])
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+
+    try {
+      console.log('Attempting sign in...')
+      const result = await signIn('credentials', {
+        redirect: false,
+        email,
+        password,
+      })
+
+      console.log('Sign in result:', result)
+
+      if (result?.error) {
+        console.error('Sign in error:', result.error)
+        setError(result.error)
+      } else if (result?.ok) {
+        console.log('Sign in successful', result)
+        // The useEffect hook will handle the navigation once the session is established
+      }
+    } catch (error) {
+      console.error('Unexpected sign in error:', error)
+      setError('An unexpected error occurred. Please try again.')
     }
   }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <h1 className="text-3xl font-bold mb-4">Sign in</h1>
-      <form onSubmit={handleSignup} className="w-64">
+      <form onSubmit={handleSignIn} className="w-64">
         <div className="mb-4">
           <label htmlFor="email" className="block mb-2">
             Email
