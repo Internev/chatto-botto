@@ -3,9 +3,10 @@ import { IMessage } from '@/_context/types'
 
 interface IMessageProps {
   message: IMessage
+  messagesLength: number
 }
 
-const Message: React.FC<IMessageProps> = ({ message }) => {
+const Message: React.FC<IMessageProps> = ({ message, messagesLength }) => {
   const [showAlt, setShowAlt] = useState(false)
   const [showEn, setShowEn] = useState(false)
 
@@ -37,7 +38,12 @@ const Message: React.FC<IMessageProps> = ({ message }) => {
       } max-w-[70%]`}
     >
       <div className="flex justify-end">
-        {message.originalLanguage === 'ja' && (
+        {messagesLength < 4 && (
+          <div className="ml-auto text-xs align-bottom text-gray-300">
+            Show/hide translations →
+          </div>
+        )}
+        {message.originalLanguage === 'ja' && message.agent === 'bot' && (
           <div className="ml-auto w-1/5">
             <button onClick={() => setShowAlt(!showAlt)}>
               <span className={showAlt ? 'text-gray-900' : 'text-gray-300'}>

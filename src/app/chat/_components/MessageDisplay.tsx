@@ -26,7 +26,7 @@ const MessageDisplay: React.FC = () => {
   if (messages.length === 0) {
     return (
       <div className="flex justify-center items-center flex-col">
-        No messages, maybe you`&apos;d like to{' '}
+        No messages, maybe you&apos;d like to{' '}
         <Link href="/chat/setup">start a new chat</Link>
       </div>
     )
@@ -39,7 +39,11 @@ const MessageDisplay: React.FC = () => {
         ref={containerRef}
       >
         {messages.map((message) => (
-          <Message key={message.id} message={message} />
+          <Message
+            key={message.id}
+            message={message}
+            messagesLength={messages.length}
+          />
         ))}
       </div>
     </div>
