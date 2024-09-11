@@ -57,8 +57,8 @@ export default function SignupPage() {
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h1 className="text-3xl font-bold mb-4">Closed Beta</h1>
         <p className="w-96 mb-4">
-          Hi! We're in closed beta right now. If you have a beta password, come
-          on in! Otherwise, please contact me for the password.
+          Hi! We&apos;re in closed beta right now. If you have a beta password,
+          come on in! Otherwise, please contact me for the password.
         </p>
         <div className="mb-4">
           <label htmlFor="password" className="block mb-2">
@@ -131,15 +131,15 @@ export default function SignupPage() {
       </form>
       {error && <p className="text-red-500 mt-4">{error}</p>}
       <p className="w-2/4 mt-4">
-        Hey thanks for testing out Chatto-Botto! You'll soon discover that it's
-        pretty rough around the edges, I'm working on it! Hopefully it's still
-        good enough to mess around with.
+        Hey thanks for testing out Chatto-Botto! You&apos;ll soon discover that
+        it&apos;s pretty rough around the edges, I&apos;m working on it!
+        Hopefully it&apos;s still good enough to mess around with.
       </p>
       <p className="w-2/4 mt-4">
         I would really appreciate any feedback - good, bad, ideas, whatever.
-        I'll be actively working on it for the next little (minus my Japan trip)
-        so hopefully changes will be coming in fast. Again, feedback please, and
-        thanks for testing!
+        I&apos;ll be actively working on it for the next little (minus my Japan
+        trip) so hopefully changes will be coming in fast. Again, feedback
+        please, and thanks for testing!
       </p>
     </div>
   )

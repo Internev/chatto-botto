@@ -1,4 +1,5 @@
-import NextAuth from 'next-auth'
+import NextAuth, { NextAuthOptions, Session, User } from 'next-auth'
+import { JWT } from 'next-auth/jwt'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb'
 import { DynamoDBAdapter } from '@auth/dynamodb-adapter'
@@ -17,7 +18,17 @@ const client = DynamoDBDocument.from(dynamoDbclient, {
   },
 })
 
-export const authOptions = {
+type AuthUser = User & {
+  id: string
+}
+
+type AuthSession = Session & {
+  user: {
+    id: string
+  } & Session['user']
+}
+
+const authOptions: NextAuthOptions = {
   debug: true,
   secret: process.env.NEXTAUTH_SECRET,
   // Configure one or more authentication providers
@@ -67,15 +78,15 @@ export const authOptions = {
     strategy: 'jwt',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT; user: AuthUser }) {
       if (user) {
         token.id = user.id
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
-        session.user.id = token.id
+        ;(session.user as AuthSession['user']).id = token.id as string
       }
       return session
     },

@@ -10,13 +10,11 @@ export default function SignupPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const router = useRouter()
-  const pathname = usePathname()
 
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
 
   useEffect(() => {
     if (session) {
-      console.log('Session established:', session, status)
       router.push('/chat/setup')
     }
   }, [session, router])
