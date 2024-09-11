@@ -5,6 +5,28 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useState } from 'react'
 
+const UserIcon = ({ size = 18 }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 100 100"
+    width={size}
+    height={size}
+    fill="white"
+  >
+    <title>Abstract user icon</title>
+
+    <defs>
+      <clipPath id="circular-border">
+        <circle cx="50" cy="50" r="41.67" />
+      </clipPath>
+    </defs>
+
+    <circle cx="50" cy="50" r="46.67" fill="black" />
+    <circle cx="50" cy="38.33" r="16.67" />
+    <circle cx="50" cy="91.67" r="31.67" clip-path="url(#circular-border)" />
+  </svg>
+)
+
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const session = useSession()
@@ -28,7 +50,7 @@ const Header = () => {
         )}
         <div className="relative">
           <button onClick={toggleDropdown} className="focus:outline-none">
-            user
+            <UserIcon />
           </button>
           {isDropdownOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
