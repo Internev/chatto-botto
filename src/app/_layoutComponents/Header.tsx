@@ -44,7 +44,7 @@ const Header = () => {
     <header className="bg-white p-1">
       <nav className="flex justify-end items-center">
         {pathname !== '/chat/setup' && (
-          <Link href="/chat/setup" className="hover:underline mr-6">
+          <Link href="/chat/setup" className="hover:underline-magical mr-6">
             New Chat
           </Link>
         )}
