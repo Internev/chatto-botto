@@ -1,25 +1,31 @@
 'use client'
 
 import { signOut, useSession } from 'next-auth/react'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useState } from 'react'
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const session = useSession()
+  const pathname = usePathname()
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen)
   }
 
-  // const session = useSession()
-  // console.log('session', session)
+  if (session.status !== 'authenticated' || pathname.includes('/auth')) {
+    return null
+  }
 
   return (
     <header className="bg-white p-1">
       <nav className="flex justify-end items-center">
-        <Link href="/chat/setup" className="hover:underline mr-6">
-          New Chat
-        </Link>
+        {pathname !== '/chat/setup' && (
+          <Link href="/chat/setup" className="hover:underline mr-6">
+            New Chat
+          </Link>
+        )}
         <div className="relative">
           <button onClick={toggleDropdown} className="focus:outline-none">
             user

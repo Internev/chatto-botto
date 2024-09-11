@@ -13,7 +13,7 @@ const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
   ssr: false,
 })
 
-const inter = Inter({ subsets: ['latin'] })
+// const inter = Inter({ subsets: ['latin'] }) ??
 
 export const metadata: Metadata = {
   title: 'Chatto-Botto',
@@ -28,11 +28,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <PHProvider>
-        <body className={inter.className}>
+        <body className="flex flex-col min-h-screen">
           <AppProvider>
             <ClientRootLayout>
               <PostHogPageView />
-              <main>{children}</main>
+              <Header />
+              <main className="flex-grow">{children}</main>
             </ClientRootLayout>
           </AppProvider>
         </body>
