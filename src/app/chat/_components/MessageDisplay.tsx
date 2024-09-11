@@ -16,8 +16,8 @@ const MessageDisplay: React.FC = () => {
   const { messages } = state.conversation
   if (state.initialising) {
     return (
-      <div className="flex justify-center items-center flex-col">
-        <div className="animate-spin rounded-full border-t-2 border-b-2 border-blue-500 w-12 h-12"></div>
+      <div className="flex justify-center items-center flex-col p-14">
+        <div className="animate-spin rounded-full border-t-2 border-b-2 border-purple-700 w-12 h-12"></div>
         Chatto-Botto is working hard!
       </div>
     )
