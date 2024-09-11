@@ -96,7 +96,7 @@ const ChatbotSetup: React.FC = () => {
             <h2 className="text-xl font-semibold mb-3 text-gray-700">
               Choose a Language:
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {Object.entries(languages).map(([lang, l]) => (
                 <Option
                   key={lang}
@@ -113,7 +113,7 @@ const ChatbotSetup: React.FC = () => {
             <h2 className="text-xl font-semibold mb-3 text-gray-700">
               Choose Your Level:
             </h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {levels.map((lvl) => (
                 <Option
                   key={lvl}
@@ -130,7 +130,7 @@ const ChatbotSetup: React.FC = () => {
             <h2 className="text-xl font-semibold mb-3 text-gray-700">
               I want to speak with:
             </h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {languages[language]?.voices.map(({ id, name, languageName }) => (
                 <Option
                   key={name}
