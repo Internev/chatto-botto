@@ -34,6 +34,16 @@ const ChatInput: React.FC = () => {
           <MicIcon isRecording={isRecording} />
         )}
       </button>
+      <div
+        className="absolute ml-4 text-xs text-gray-500 whitespace-nowrap"
+        style={{
+          left: `calc(50% + 38px)`,
+        }}
+      >
+        {isRecording
+          ? '← Press to stop recording'
+          : '← Press to start recording'}
+      </div>
     </div>
   )
 }
