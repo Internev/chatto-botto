@@ -27,7 +27,9 @@ const MessageDisplay: React.FC = () => {
     return (
       <div className="flex justify-center items-center flex-col">
         No messages, maybe you&apos;d like to{' '}
-        <Link href="/chat/setup">start a new chat</Link>
+        <Link href="/chat/setup" className="underline-magical">
+          Start a new chat
+        </Link>
       </div>
     )
   }
