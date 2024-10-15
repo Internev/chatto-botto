@@ -137,9 +137,9 @@ export default function SignupPage() {
       </p>
       <p className="w-2/4 mt-4">
         I would really appreciate any feedback - good, bad, ideas, whatever.
-        I&apos;ll be actively working on it for the next little (minus my Japan
-        trip) so hopefully changes will be coming in fast. Again, feedback
-        please, and thanks for testing!
+        I&apos;ll be actively working on it for the next little while so
+        hopefully changes will be coming in fast. Again, feedback please, and
+        thanks for testing!
       </p>
     </div>
   )
