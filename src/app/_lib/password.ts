@@ -5,6 +5,5 @@ export const validatePassword = async (password: string) => {
   if (!password || password.length === 0) return false
   const validPassword = process.env['BETA_PW']
   const validPassword2 = process.env['BETA_PW2']
-  console.log('x', password, validPassword2)
   return password === validPassword || password === validPassword2
 }
