@@ -108,7 +108,7 @@ const cleanConversation = (conversation: IConversation) => {
 }
 
 export const parseStateToClaude = async (conversation: IConversation) => {
-  console.log('Conversation:', conversation)
+  // console.log('Conversation:', conversation)
   const santisedMessages = cleanConversation(conversation)
 
   const messages = santisedMessages.map((message) => {
@@ -160,7 +160,7 @@ export const continueClaudeConversation = async (
 
   const claudeConversation = await parseStateToClaude(conversation)
 
-  console.log('Claude conversation:', JSON.stringify(claudeConversation))
+  // console.log('Claude conversation:', JSON.stringify(claudeConversation))
 
   const response = await anthropic.messages.create({
     model: 'claude-3-haiku-20240307',

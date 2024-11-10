@@ -7,7 +7,7 @@ const openai = new OpenAI({
 })
 
 const transcribe = async (formData: FormData) => {
-  console.log('sending request to openai', formData)
+  // console.log('sending request to openai', formData)
   const audio = formData.get('audio') as Blob
   const language = formData.get('language') as string
   if (!audio) {
@@ -26,8 +26,8 @@ const transcribe = async (formData: FormData) => {
         model: 'whisper-1',
       }),
     ])
-    console.log('transcription:', transcription)
-    console.log('translation:', translation)
+    // console.log('transcription:', transcription)
+    // console.log('translation:', translation)
     return [transcription.text, translation.text]
   } catch (error) {
     console.error('Error:', error)

@@ -13,6 +13,7 @@ export type ILanguageCode =
   | 'zh'
   | 'ro'
   | 'sv'
+  | 'hu'
   | 'main'
   | 'alt'
   | 'cor'

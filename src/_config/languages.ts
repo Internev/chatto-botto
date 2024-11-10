@@ -195,16 +195,30 @@ export const languages: ILanguageSetup = {
       },
     ],
   },
-  Swedish: {
-    name: 'Swedish',
-    main: 'sv',
+  // Swedish: {
+  //   name: 'Swedish',
+  //   main: 'sv',
+  //   voices: [
+  //     {
+  //       gender: 'Female',
+  //       id: 'Elin',
+  //       languageCode: 'sv-SE',
+  //       languageName: 'Swedish',
+  //       name: 'Elin',
+  //       supportedEngines: ['neural'],
+  //     },
+  //   ],
+  // },
+  Hungarian: {
+    name: 'Hungarian',
+    main: 'hu',
     voices: [
       {
         gender: 'Female',
-        id: 'Elin',
-        languageCode: 'sv-SE',
-        languageName: 'Swedish',
-        name: 'Elin',
+        id: 'Suvi',
+        languageCode: 'fi-FI',
+        languageName: 'Finnish',
+        name: 'Suvi',
         supportedEngines: ['neural'],
       },
     ],

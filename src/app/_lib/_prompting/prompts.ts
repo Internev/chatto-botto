@@ -50,6 +50,10 @@ const languages: ILanguage = {
     name: 'Portuguese',
     specificInstructions: `Please respond with Portuguese, English translations. Formatted with tags around each language (including English corrections for mistakes if they would be helpful): "<main>Oi</main> <en>hello</en> <cor>It's not "Oi" it's "Bom dia"</cor>"`,
   },
+  hu: {
+    name: 'Hungarian',
+    specificInstructions: `Please respond with Hungarian, English translations. Formatted with tags around each language (including English corrections for mistakes if they would be helpful): "<main>szia</main> <en>hello</en> <cor>It's not "szia" it's "jó reggelt"</cor>"`,
+  },
   sv: {
     name: 'Swedish',
     specificInstructions: `Please respond with Swedish, English translations. Formatted with tags around each language (including English corrections for mistakes if they would be helpful): "<main>Hej</main> <en>hello</en> <cor>It's not "Hej" it's "God morgon"</cor>"`,
